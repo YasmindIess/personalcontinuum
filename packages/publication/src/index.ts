@@ -1,3 +1,6 @@
+export * from "./manifold.ts";
+export * from "./relation-seed.ts";
+
 import type { PublicSignal } from "@blochfield/continuum-model";
 export interface ThreadPostDraft {
   part: 1 | 2;

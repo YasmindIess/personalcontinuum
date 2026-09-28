@@ -29,6 +29,9 @@
       ],
       "@blochfield/publication": [
         "packages/publication/src/index.ts"
+      ],
+      "@blochfield/evidential-topology": [
+        "packages/topology/src/index.ts"
       ]
     }
   },

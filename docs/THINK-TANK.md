@@ -14,7 +14,7 @@ Candidate invariants: provenance continuity, semantic overlap, structural corres
 
 **Question:** Can fifty artworks be recognizably distinct while remaining sections of one persistent field?
 
-V3 should define each artwork as a product of six coordinates: primary operator, secondary operator, deformation law, topology motif, corridor behavior, and semantic mutation vector. The ten V2.1 families become bases, not finished identities.
+V3 now tests a stronger hypothesis: the seven-word public-signal projection itself is compiled into an ordered Semantic Heptad. Each word becomes a bounded mathematical mutation whose output state becomes the next word's input. The previous primary/secondary/deformation/topology/corridor tuple survives only as a compatibility witness.
 
 **Falsifier:** shuffled contact sheets remain visually indistinguishable except for text.
 

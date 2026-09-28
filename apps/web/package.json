@@ -13,7 +13,8 @@
     "@blochfield/continuum-renderer": "*",
     "@blochfield/relation-seeds": "*",
     "@blochfield/provenance": "*",
-    "@blochfield/publication": "*"
+    "@blochfield/publication": "*",
+    "@blochfield/evidential-topology": "*"
   },
   "devDependencies": {
     "vite": "^7.3.6"

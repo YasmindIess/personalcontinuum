@@ -1,0 +1,7 @@
+{
+  "name":"@blochfield/evidential-topology",
+  "version":"0.1.0",
+  "type":"module",
+  "exports":"./src/index.ts",
+  "dependencies":{"@blochfield/continuum-model":"*","@blochfield/relation-seeds":"*"}
+}
