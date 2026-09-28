@@ -1,4 +1,4 @@
-import type { RelationSeed } from "./index";
+import type { RelationSeed } from "./index.ts";
 
 export type RelationSeedIssueCode =
   | "schema.invalid"

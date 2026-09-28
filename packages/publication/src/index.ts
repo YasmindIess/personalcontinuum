@@ -1,4 +1,4 @@
-export * from "./relation-seed";
+export * from "./relation-seed.ts";
 
 import type { PublicSignal } from "@blochfield/continuum-model";
 export interface ThreadPostDraft {
