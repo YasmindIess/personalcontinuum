@@ -1,0 +1,21 @@
+{
+  "name": "@blochfield/continuum-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@blochfield/continuum-model": "*",
+    "@blochfield/continuum-renderer": "*",
+    "@blochfield/relation-seeds": "*",
+    "@blochfield/provenance": "*",
+    "@blochfield/publication": "*"
+  },
+  "devDependencies": {
+    "vite": "^7.3.6"
+  }
+}

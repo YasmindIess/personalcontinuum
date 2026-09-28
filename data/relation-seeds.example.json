@@ -1,0 +1,17 @@
+{
+  "schema": "blochfield.relation-seed.v1",
+  "id": "RS-0001",
+  "createdAt": "PENDING",
+  "curator": "@msiyasmsi",
+  "origins": [
+    {"role":"founder","handle":"@msiyasmsi","sourceUrl":"PENDING","sourceType":"post","capturedAt":"PENDING"},
+    {"role":"participant","handle":"@TAGGED_USER","sourceUrl":"PENDING","sourceType":"post","capturedAt":"PENDING"}
+  ],
+  "observed": [],
+  "interpreted": [],
+  "open": ["Participant response not yet received.", "Independent verification not yet performed."],
+  "verification": {"independent":"deferred","receipts":[]},
+  "association":"citation-does-not-imply-endorsement",
+  "externalAuthority":"none",
+  "revision":1
+}

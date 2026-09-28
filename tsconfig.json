@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@blochfield/continuum-model": [
+        "packages/model/src/index.ts"
+      ],
+      "@blochfield/continuum-renderer": [
+        "packages/renderer/src/index.ts"
+      ],
+      "@blochfield/relation-seeds": [
+        "packages/relation-seeds/src/index.ts"
+      ],
+      "@blochfield/provenance": [
+        "packages/provenance/src/index.ts"
+      ],
+      "@blochfield/publication": [
+        "packages/publication/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "apps/**/*.ts",
+    "packages/**/*.ts"
+  ]
+}

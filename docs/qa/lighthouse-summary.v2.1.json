@@ -1,0 +1,68 @@
+{
+  "desktop": {
+    "categories": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 90
+    },
+    "metrics": {
+      "first-contentful-paint": "0.4\u00a0s",
+      "largest-contentful-paint": "0.4\u00a0s",
+      "speed-index": "1.0\u00a0s",
+      "total-blocking-time": "0\u00a0ms",
+      "cumulative-layout-shift": "0",
+      "interactive": "0.4\u00a0s"
+    },
+    "domElements": 3106,
+    "mainThreadWorkMs": 405.83700000000005,
+    "consoleErrors": [
+      {
+        "source": "network",
+        "description": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "sourceLocation": {
+          "type": "source-location",
+          "url": "http://127.0.0.1:48731/favicon.ico",
+          "urlProvider": "network",
+          "line": 0,
+          "column": 0
+        }
+      }
+    ],
+    "metaDescriptionScore": 0,
+    "fontSizeScore": null
+  },
+  "mobile": {
+    "categories": {
+      "performance": 92,
+      "accessibility": 100,
+      "best-practices": 93,
+      "seo": 90
+    },
+    "metrics": {
+      "first-contentful-paint": "1.9\u00a0s",
+      "largest-contentful-paint": "2.0\u00a0s",
+      "speed-index": "3.4\u00a0s",
+      "total-blocking-time": "260\u00a0ms",
+      "cumulative-layout-shift": "0",
+      "interactive": "2.4\u00a0s"
+    },
+    "domElements": 3106,
+    "mainThreadWorkMs": 2512.4160000000006,
+    "consoleErrors": [
+      {
+        "source": "network",
+        "description": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "sourceLocation": {
+          "type": "source-location",
+          "url": "http://127.0.0.1:48731/favicon.ico",
+          "urlProvider": "network",
+          "line": 0,
+          "column": 0
+        }
+      }
+    ],
+    "metaDescriptionScore": 0,
+    "fontSizeScore": 0
+  }
+}

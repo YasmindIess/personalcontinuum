@@ -1,0 +1,11 @@
+:root {
+  --pc-bg: #05070a;
+  --pc-ink: #f1f5ef;
+  --pc-muted: #98a5a0;
+  --pc-faint: #51625d;
+  --pc-line: #27332f;
+  --pc-accent: #d9f99d;
+  --pc-accent-strong: #eefad0;
+  --pc-pad: clamp(18px, 4vw, 64px);
+  --pc-readable: min(68ch, calc(100vw - 2 * var(--pc-pad)));
+}

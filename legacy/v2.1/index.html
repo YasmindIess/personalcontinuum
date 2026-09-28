@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070a">
+<title>Persona Continuum — V2.1 Evidential Terrain</title>
+<style>
+:root {
+  --bg:#05070a; --bg2:#090d0c; --ink:#f1f5ef; --muted:#98a5a0; --faint:#51625d;
+  --soft:#82968f; --line:#27332f; --line2:#3a4843; --accent:#d9f99d; --accent2:#eefad0;
+  --glass:rgba(9,13,14,.68); --pad:clamp(18px,4vw,64px); --tilew:min(640px,calc(100vw - 2*var(--pad)));
+}
+* { box-sizing:border-box }
+html { background:var(--bg); color-scheme:dark; scroll-snap-type:y mandatory; scroll-behavior:smooth }
+body {
+  margin:0; background:
+  radial-gradient(circle at 80% 14%, rgba(217,249,157,.03), transparent 24%),
+  radial-gradient(circle at 18% 76%, rgba(255,255,255,.025), transparent 18%),
+  linear-gradient(180deg,#06080a 0%,#040608 100%);
+  color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-x:hidden;
+}
+button { font:inherit }
+#terrain {
+  position:fixed; inset:0; z-index:-10; pointer-events:none; opacity:.95;
+}
+#terrain svg { width:100%; height:100% }
+#hud {
+  position:fixed; inset:16px 16px auto 16px; z-index:40; display:grid;
+  grid-template-columns:auto 1fr auto auto; gap:12px; align-items:center;
+  pointer-events:none;
+}
+.chassis {
+  padding:10px 12px; border:1px solid rgba(120,140,132,.28); background:rgba(5,7,10,.56);
+  backdrop-filter:blur(14px); border-radius:14px; pointer-events:auto;
+}
+.brand {
+  font:600 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em; text-transform:uppercase; color:#d4dfd8;
+}
+.subbrand { display:block; color:#7f8c87; margin-top:4px; letter-spacing:.12em; font-weight:500 }
+.progress {
+  height:2px; background:#24302c; position:relative; overflow:hidden; border-radius:999px;
+}
+.progress > i {
+  position:absolute; inset:0 auto 0 0; width:2%; background:linear-gradient(90deg, rgba(217,249,157,.65), var(--accent));
+  box-shadow:0 0 16px rgba(217,249,157,.28); transition:width .4s ease;
+}
+.counter {
+  font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace; color:#dbe6df;
+  white-space:nowrap;
+}
+#voices {
+  display:flex; gap:6px; align-items:center;
+}
+.voice-chip {
+  display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px;
+  border:1px solid #33403b; color:#889691; font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.14em; text-transform:uppercase; background:rgba(8,12,13,.52);
+}
+.voice-chip b {
+  display:inline-grid; place-items:center; width:18px; height:18px; border-radius:50%;
+  border:1px solid currentColor; font-weight:700;
+}
+.voice-chip.active {
+  color:#f0f7ea; border-color:rgba(217,249,157,.48); box-shadow:0 0 0 1px rgba(217,249,157,.14) inset, 0 0 18px rgba(217,249,157,.08);
+}
+#controls {
+  position:fixed; right:16px; bottom:16px; z-index:40; display:flex; gap:8px;
+}
+.ctrl {
+  border:1px solid #36423e; background:rgba(7,10,11,.68); color:#d9e3dc; border-radius:999px;
+  padding:10px 12px; cursor:pointer; letter-spacing:.04em; font-size:11px;
+  backdrop-filter:blur(14px);
+}
+.ctrl:hover { border-color:#7f9189 }
+section { position:relative }
+#intro {
+  min-height:100svh; scroll-snap-align:start; display:grid; align-content:end;
+  padding:var(--pad); padding-bottom:clamp(74px,12vh,136px);
+}
+#intro .eyebrow {
+  font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.18em; text-transform:uppercase;
+  color:#a7b4ae; margin-bottom:12px;
+}
+#intro h1 {
+  margin:0; font-size:clamp(54px,10vw,160px); line-height:.8; letter-spacing:-.075em; font-weight:650;
+  max-width:1100px;
+}
+#intro p {
+  max-width:760px; color:#9aa6a2; line-height:1.55; font-size:14px; margin:28px 0 0;
+}
+#intro .intro-grid {
+  display:grid; grid-template-columns:repeat(3,minmax(0,220px)); gap:12px; margin-top:28px; max-width:760px;
+}
+#intro .intro-grid div {
+  border-top:1px solid #2d3834; padding-top:8px; color:#8e9b96; font-size:11px; line-height:1.45;
+}
+#intro strong {
+  display:block; font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:#d4ddd8; margin-bottom:3px;
+}
+.tile {
+  min-height:100svh; scroll-snap-align:start; border-bottom:1px solid #111917;
+  overflow:hidden; isolation:isolate;
+  content-visibility:auto;
+  contain-intrinsic-size:100svh;
+  contain:layout paint style;
+}
+.tile::before {
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 78% 34%, rgba(217,249,157,.055), transparent 22%),
+    radial-gradient(circle at 14% 84%, rgba(255,255,255,.03), transparent 18%),
+    linear-gradient(180deg, rgba(255,255,255,.02), transparent 42%, rgba(255,255,255,.012));
+  z-index:-5;
+}
+.tile .index {
+  position:absolute; top:clamp(64px,9vh,100px); left:var(--pad);
+  font:500 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.15em;
+  color:#67756f;
+}
+.copy {
+  position:absolute; left:var(--pad); bottom:clamp(50px,9vh,100px); width:var(--tilew); z-index:9;
+}
+.voice-readout {
+  display:flex; gap:10px; align-items:center; margin-bottom:14px;
+  font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace; color:#a6b1ad; letter-spacing:.14em; text-transform:uppercase;
+}
+.voice-readout .disc {
+  display:inline-grid; place-items:center; width:28px; height:28px; border-radius:50%;
+  border:1px solid rgba(217,249,157,.36); color:#eef7e4;
+  box-shadow:0 0 18px rgba(217,249,157,.08);
+}
+.stance {
+  color:#73827d; font-size:10px; text-transform:none; letter-spacing:.05em;
+}
+.name {
+  margin:0 0 7px; font-size:clamp(16px,1.8vw,25px); font-weight:520; letter-spacing:-.015em;
+}
+.handle {
+  color:#7f8d87; font:500 11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.phrase {
+  margin:22px 0 18px; max-width:980px; text-wrap:balance;
+  font-size:clamp(34px,5.6vw,78px); line-height:.92; letter-spacing:-.06em; font-weight:620;
+  text-shadow:0 1px 0 rgba(255,255,255,.03), 0 12px 32px rgba(0,0,0,.36);
+}
+.meta {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 22px; max-width:700px;
+}
+.meta div, .position-box {
+  border-top:1px solid #2a3531; padding-top:7px; color:#98a49f; font-size:11px; line-height:1.45;
+}
+.meta strong, .position-box strong {
+  display:block; color:#d4ded8; font-size:9px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:2px;
+}
+.badges {
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; align-items:center;
+}
+.badge, .mini-badge {
+  display:inline-flex; align-items:center; gap:6px; padding:0;
+  font:600 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.12em; text-transform:uppercase; color:#8d9a95;
+}
+.badge i, .mini-badge i {
+  width:6px; height:6px; border-radius:50%; background:#8d9994;
+}
+.badge.high i { background:var(--accent) }
+.badge.medium i { background:#d7cb97 }
+.badge.provisional i { background:#9aa1a0 }
+.mini-badge.claim-eligible i { background:#cff7a6 }
+.mini-badge.claim-provisional i { background:#95a19c }
+.position-box {
+  position:absolute; right:var(--pad); top:clamp(150px,17vh,200px); width:min(250px,30vw); z-index:10;
+  background:rgba(7,10,11,.34); border:1px solid rgba(67,78,72,.28); border-radius:14px; padding:12px 14px;
+  backdrop-filter:blur(8px);
+}
+.position-box .grid {
+  display:grid; grid-template-columns:1fr auto; gap:7px 10px; margin-top:6px;
+}
+.position-box .grid span { color:#a0ada7; font-size:11px }
+.position-box .grid b { color:#eef5ea; font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace }
+.position-box .note { margin-top:9px; color:#7e8c86; font-size:10px; line-height:1.35 }
+.operator-ghost {
+  position:absolute; right:var(--pad); bottom:clamp(40px,8vh,84px); z-index:-2;
+  font:650 clamp(56px,11vw,160px)/.78 Georgia, serif;
+  color:rgba(239,248,236,.042); letter-spacing:-.08em; text-transform:lowercase; pointer-events:none;
+}
+.formula-stack {
+  position:absolute; right:var(--pad); top:clamp(64px,9vh,100px); z-index:7; text-align:right;
+  color:#61706b; font:500 10px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+  white-space:pre;
+}
+.art {
+  position:absolute; inset:0; z-index:-1;
+}
+.art svg {
+  width:min(96vw,1260px); height:min(82vh,780px); overflow:visible;
+  position:absolute; inset:0; margin:auto; filter:drop-shadow(0 18px 48px rgba(0,0,0,.24));
+}
+.math-main { fill:none; stroke:#e6efe8; stroke-width:1.08; opacity:.84 }
+.math-soft { fill:none; stroke:#91a59e; stroke-width:.72; opacity:.42 }
+.math-faint { fill:none; stroke:#5d6d67; stroke-width:.5; opacity:.24 }
+.math-node { fill:var(--accent); opacity:.86 }
+.slot-halo { fill:none; stroke:rgba(217,249,157,.34); stroke-width:1 }
+.slot-halo-2 { fill:none; stroke:rgba(217,249,157,.12); stroke-width:.8 }
+.corridor { fill:none; stroke:rgba(217,249,157,.94); stroke-width:1.35; stroke-linecap:round; stroke-dasharray:2 4; filter:drop-shadow(0 0 8px rgba(217,249,157,.28)) }
+.corridor-soft { fill:none; stroke:rgba(217,249,157,.24); stroke-width:.85; stroke-linecap:round }
+.simplex { fill:rgba(217,249,157,.045); stroke:rgba(217,249,157,.18); stroke-width:.55 }
+.origin-core { fill:#f3fee0; stroke:rgba(217,249,157,.44); stroke-width:.8; filter:drop-shadow(0 0 12px rgba(217,249,157,.28)) }
+.origin-shell { fill:none; stroke:rgba(255,255,255,.12); stroke-width:.8 }
+.removal-note {
+  opacity:0; transition:opacity .18s ease; position:absolute; right:var(--pad); top:50%; transform:translateY(-50%);
+  font:600 11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; color:#adc88d; letter-spacing:.1em; text-transform:uppercase;
+}
+.tile.cut .removal-note { opacity:.95 }
+.tile.cut .origin-core, .tile.cut .slot-halo, .tile.cut .slot-halo-2 { opacity:.08 }
+.tile.cut .corridor { opacity:.18; stroke-dasharray:1 10 }
+.tile.cut .simplex { opacity:.04 }
+.tile.cut .math-main { opacity:.36 }
+.legend-float {
+  position:absolute; left:var(--pad); top:clamp(130px,18vh,188px); max-width:320px; z-index:9;
+  font:500 10px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; color:#64726d;
+}
+.legend-float b { color:#bdc9c4; font-weight:600 }
+#outro {
+  min-height:100svh; scroll-snap-align:start; display:grid; place-items:center; padding:var(--pad);
+  text-align:center;
+}
+#outro .wrap { max-width:980px }
+#outro .legend {
+  font:600 10px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; color:#75827d; letter-spacing:.12em; text-transform:uppercase;
+}
+#outro h2 {
+  margin:10px 0 0; font-size:clamp(44px,8vw,116px); line-height:.9; letter-spacing:-.065em;
+}
+#outro p {
+  max-width:760px; margin:22px auto 0; color:#98a49f; line-height:1.6;
+}
+.paused * { animation-play-state:paused !important }
+@media (max-width:900px) {
+  #hud { grid-template-columns:1fr; gap:8px; inset:12px 12px auto 12px }
+  .position-box { width:min(260px,calc(100vw - 2*var(--pad))); top:auto; bottom:148px; right:var(--pad) }
+}
+@media (max-width:740px) {
+  .formula-stack, .operator-ghost, .legend-float { display:none }
+  .phrase { font-size:clamp(32px,10vw,54px) }
+  .meta { grid-template-columns:1fr }
+  .copy { bottom:84px }
+  .art svg { width:110vw; height:76vh; opacity:.84 }
+  .position-box { position:relative; inset:auto; margin:18px 0 0 var(--pad); right:auto; bottom:auto; background:rgba(7,10,11,.22) }
+  .tile .index { top:88px }
+  #intro .intro-grid { grid-template-columns:1fr }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto }
+}
+</style>
+</head>
+<body>
+<div id="terrain"></div>
+
+<div id="hud">
+  <div class="chassis">
+    <span class="brand">Persona Continuum / V2.1 evidential terrain
+      <span class="subbrand">backcenter perspective · rendered public signals</span>
+    </span>
+  </div>
+  <div class="chassis progress"><i id="bar"></i></div>
+  <div class="chassis counter" id="counter">00 / 50</div>
+  <div class="chassis" id="voices">
+    <span class="voice-chip" data-voice="0"><b>I</b> inward relay</span>
+    <span class="voice-chip" data-voice="1"><b>You</b> addressed relay</span>
+    <span class="voice-chip" data-voice="2"><b>They</b> observed relay</span>
+  </div>
+</div>
+
+<div id="controls">
+  <button class="ctrl" id="motion">pause motion</button>
+  <button class="ctrl" id="copy">copy current tile</button>
+  <button class="ctrl" id="jump">next</button>
+</div>
+
+<section id="intro">
+  <div class="eyebrow">One field · fifty origin slots · continuity ≠ sameness</div>
+  <h1>continuous evidential terrain,<br>not a stack of cards.</h1>
+  <p>This version turns the reel into a persistent mathematical world. Each ranked public signal is still compressed into seven words, but now the background behaves like one continuous low-contrast manifold, the bright filament acts as a provenance-bearing invariant corridor, each person occupies an origin slot, and the I / You / They cycle is explicit enough to read as stance rather than decoration.</p>
+  <div class="intro-grid">
+    <div><strong>ground</strong>Deep informational manifold with hairline lattice, long geodesics, sparse nodes, and low-contrast curvature.</div>
+    <div><strong>corridor</strong>Brightest structure in the system: a thin admissible filament surviving operator changes.</div>
+    <div><strong>position</strong>Airdropped position is treated as a projection of evidential geometry, not as follower-count economics.</div>
+  </div>
+</section>
+
+<main id="reel"></main>
+
+<section id="outro">
+  <div class="wrap">
+    <div class="legend">Σ personaᵢ · continuity ≠ sameness · M → M \ Pᵢ</div>
+    <h2>the invariant persists.<br>the operator changes.</h2>
+    <p>Every tile remains a compact public-facing reading rather than a definition of a human being. The value proposition is the world itself: how rendered situated signals preserve corridors, hold bridges, and create higher-order combinations inside one evidential terrain.</p>
+    <p class="legend">V2.1 performance freeze · lazy SVG window ±2 · 2026-09-28</p>
+  </div>
+</section>
+
+<script>
+const DATA = [{"name": "sonder berry", "handle": "@Midnightballoon", "phrase": "Substrate co-dev weaving Advaita uranium agathist loops", "style": "bio-poetic · speculative · reply-driven", "themes": "substrate systems · Advaita · uranium · AI", "persona": "esoteric co-developer", "confidence": "high", "pi": 0.94, "delta": 0.59, "beta": 0.7, "kappa": 0.51, "rho": 0.87, "simplices": 6, "corridors": 4, "claim": "eligible"}, {"name": "Tree Lake Rain 🌲🦆🌦️", "handle": "@TreeLakeRain", "phrase": "Nature-coded cinema mythos becoming ARG living mesh", "style": "cinematic · nature-coded · communal", "themes": "nature · myth · ARG · living systems", "persona": "worldbuilding signal-gardener", "confidence": "provisional", "pi": 0.48, "delta": 0.87, "beta": 0.65, "kappa": 0.85, "rho": 0.52, "simplices": 6, "corridors": 5, "claim": "provisional"}, {"name": "Beans", "handle": "@137beans", "phrase": "Writer of things returning through recursive source-loops", "style": "aphoristic · lore-play · conversational", "themes": "writing · recursion · source · cutscenes", "persona": "recursive storyteller", "confidence": "high", "pi": 0.61, "delta": 0.77, "beta": 0.74, "kappa": 0.48, "rho": 0.8, "simplices": 14, "corridors": 5, "claim": "eligible"}, {"name": "𝙼𝚒𝚔𝚎 🜎", "handle": "@OhWellMike", "phrase": "Symbiotic maker channeling meaning through awakening symbols", "style": "symbolic · AI-mystic · maker-first", "themes": "symbiosis · awakening · meaning · creation", "persona": "mystical systems-maker", "confidence": "high", "pi": 0.69, "delta": 0.78, "beta": 0.69, "kappa": 0.48, "rho": 0.85, "simplices": 13, "corridors": 3, "claim": "eligible"}, {"name": "jun.rise", "handle": "@lsdjun", "phrase": "Loop-thinker drawing softly inside crypto morning noise", "style": "soft-social · visual · micro-posting", "themes": "loops · drawing · RISE · crypto", "persona": "gentle loop-thinker", "confidence": "high", "pi": 0.47, "delta": 0.96, "beta": 0.42, "kappa": 0.47, "rho": 0.79, "simplices": 5, "corridors": 4, "claim": "eligible"}, {"name": "Time Traveler", "handle": "@singularitymuse", "phrase": "Grok-fan imagining AI art through singularity wonder", "style": "AI-art · enthusiastic · community-facing", "themes": "Grok · imagination · singularity · art", "persona": "singularity muse", "confidence": "high", "pi": 0.9, "delta": 0.76, "beta": 0.89, "kappa": 0.74, "rho": 0.81, "simplices": 14, "corridors": 4, "claim": "eligible"}, {"name": "Dragan Sutevski, PhD", "handle": "@sutevskid", "phrase": "Small-business systems professor packaging entrepreneurship into practice", "style": "educational · systems-oriented · practical", "themes": "entrepreneurship · consulting · teaching · operations", "persona": "business-systems professor", "confidence": "high", "pi": 0.72, "delta": 0.85, "beta": 0.77, "kappa": 0.44, "rho": 0.86, "simplices": 13, "corridors": 2, "claim": "eligible"}, {"name": "YouTube", "handle": "@YouTube", "phrase": "Like, subscribe, remix: infinite creator-viewer content stream", "style": "brand-social · creator-centric · memetic", "themes": "video · creators · fandom · participation", "persona": "global content switchboard", "confidence": "high", "pi": 0.87, "delta": 0.82, "beta": 0.59, "kappa": 0.61, "rho": 0.82, "simplices": 12, "corridors": 1, "claim": "eligible"}, {"name": "Sid the Argent", "handle": "@SidTheArgent", "phrase": "Guitars, philosophy, cognition: think; don’t imitate me", "style": "argumentative · reflective · aphoristic", "themes": "guitars · philosophy · cognition · ethics", "persona": "provocateur for independent thought", "confidence": "high", "pi": 0.85, "delta": 0.57, "beta": 0.57, "kappa": 0.79, "rho": 0.82, "simplices": 6, "corridors": 4, "claim": "eligible"}, {"name": "Victor Bridges-Ruiz, Ph.D.", "handle": "@vbridgesruiz", "phrase": "Interoperability engineer tracing subtle change into momentousness", "style": "systems-essay · technical · reflective", "themes": "interoperability · eventfulness · ontology · change", "persona": "interoperability theorist-engineer", "confidence": "high", "pi": 0.55, "delta": 0.58, "beta": 0.77, "kappa": 0.6, "rho": 0.78, "simplices": 15, "corridors": 1, "claim": "eligible"}, {"name": "TatsuyaM™", "handle": "@TatsuyaBot", "phrase": "Japanese motion designer sculpting precision frame-by-frame flow", "style": "visual-first · precise · motion-led", "themes": "motion design · timing · composition · flow", "persona": "frame-by-frame motion craftsman", "confidence": "high", "pi": 0.7, "delta": 0.62, "beta": 0.92, "kappa": 0.51, "rho": 0.8, "simplices": 16, "corridors": 2, "claim": "eligible"}, {"name": "maro", "handle": "@ProofofMaro", "phrase": "Accidental engineer, deliberate polymath mapping fifth-dimensional economics", "style": "polymathic · technical · entrepreneurial", "themes": "engineering · economics · systems · learning", "persona": "deliberate polymath", "confidence": "high", "pi": 0.93, "delta": 0.85, "beta": 0.48, "kappa": 0.94, "rho": 0.81, "simplices": 4, "corridors": 3, "claim": "eligible"}, {"name": "Elon Musk", "handle": "@elonmusk", "phrase": "Multi-planetary species acceleration, everything all at once", "style": "high-velocity · terse · meme-amplifying", "themes": "space · AI · engineering · acceleration", "persona": "industrial accelerationist", "confidence": "high", "pi": 0.52, "delta": 0.5, "beta": 0.72, "kappa": 0.45, "rho": 0.78, "simplices": 15, "corridors": 2, "claim": "eligible"}, {"name": "Mort Espiral", "handle": "@mortespiral", "phrase": "Argentine psychonaut making Web3 fractals, beats, goodwill", "style": "psychedelic · musical · visual", "themes": "Web3 art · fractals · beats · public goods", "persona": "spiral psychonaut-artist", "confidence": "high", "pi": 0.81, "delta": 0.53, "beta": 0.87, "kappa": 0.87, "rho": 0.84, "simplices": 12, "corridors": 5, "claim": "eligible"}, {"name": "⊔╙𝖊⋁༏𝜼", "handle": "@ulevinn", "phrase": "UFO-profile transmitting gnostic Truman-show awakening anomaly signals", "style": "gnostic · cryptic · narrative-heavy", "themes": "awakening · simulation · identity · anomaly", "persona": "UFO signal-anomaly", "confidence": "high", "pi": 0.63, "delta": 0.72, "beta": 0.95, "kappa": 0.83, "rho": 0.83, "simplices": 8, "corridors": 4, "claim": "eligible"}, {"name": "vitalik.eth", "handle": "@VitalikButerin", "phrase": "First-level balance pursuing Ethereum self-sovereignty without chokepoints", "style": "technical-philosophical · explanatory · research-led", "themes": "Ethereum · privacy · decentralization · cryptography", "persona": "protocol philosopher-builder", "confidence": "high", "pi": 0.85, "delta": 0.84, "beta": 0.77, "kappa": 0.43, "rho": 0.79, "simplices": 11, "corridors": 2, "claim": "eligible"}, {"name": "Scry Visuals", "handle": "@Scrygl", "phrase": "Graphics programmer renders mathematical worlds using GLSL", "style": "mathematical · generative · shader-native", "themes": "GLSL · recursion · geometry · visual computation", "persona": "mathematical graphics programmer", "confidence": "high", "pi": 0.72, "delta": 0.93, "beta": 0.54, "kappa": 0.84, "rho": 0.78, "simplices": 17, "corridors": 4, "claim": "eligible"}, {"name": "©Sky", "handle": "@Starkapoo", "phrase": "Cosmic AI artist turning dreams into magic", "style": "cosmic · affirmative · AI-visual", "themes": "space · dreams · light · imagination", "persona": "cosmic dream-maker", "confidence": "high", "pi": 0.81, "delta": 0.57, "beta": 0.5, "kappa": 0.91, "rho": 0.86, "simplices": 9, "corridors": 6, "claim": "eligible"}, {"name": "𝓜𝒂𝒖𝒓𝒊𝒛𝒊𝒐 𝗜𝒃𝛼", "handle": "@Dragonmaurizio", "phrase": "Independent quantum researcher skywatching regenerative energy systems", "style": "research-curious · skywatching · technical", "themes": "quantum · sky · energy · regeneration", "persona": "independent quantum-energy explorer", "confidence": "high", "pi": 0.52, "delta": 0.86, "beta": 0.56, "kappa": 0.85, "rho": 0.83, "simplices": 8, "corridors": 1, "claim": "eligible"}, {"name": "Kitasenju Design", "handle": "@kitasenjudesign", "phrase": "Japanese coder-designer experimenting with strange realtime graphics", "style": "experimental · algorithmic · self-deprecating", "themes": "realtime graphics · code · algorithms · interaction", "persona": "strange-graphics laboratory", "confidence": "high", "pi": 0.74, "delta": 0.66, "beta": 0.86, "kappa": 0.89, "rho": 0.79, "simplices": 8, "corridors": 1, "claim": "eligible"}, {"name": "dexter🧫", "handle": "@Physicsvers", "phrase": "Physics-to-code astrophysics, chaos, simulations, visual experiments daily", "style": "simulation-led · visual · physics-coded", "themes": "astrophysics · chaos · code · simulation", "persona": "physics-to-code experimentalist", "confidence": "provisional", "pi": 0.52, "delta": 0.91, "beta": 0.7, "kappa": 0.72, "rho": 0.52, "simplices": 4, "corridors": 6, "claim": "provisional"}, {"name": "CyberMysticGarden - Marcelo Pinel", "handle": "@cybermistic", "phrase": "Inner-child mystic garden fusing archaeology, alchemy, neon", "style": "mystical · archaeological · neon-collage", "themes": "inner child · alchemy · ancient cultures · cyberspace", "persona": "cyber-mystic gardener", "confidence": "high", "pi": 0.92, "delta": 0.64, "beta": 0.56, "kappa": 0.74, "rho": 0.81, "simplices": 15, "corridors": 5, "claim": "eligible"}, {"name": "Brian Jordan", "handle": "@bcjordan", "phrase": "GPU webmaster prototyping falling-sand and gravity-lensing worlds", "style": "prototype-first · realtime · playful-technical", "themes": "GPU · falling sand · gravity lensing · simulation", "persona": "physics-prototype webmaster", "confidence": "high", "pi": 0.76, "delta": 0.79, "beta": 0.55, "kappa": 0.88, "rho": 0.77, "simplices": 4, "corridors": 1, "claim": "eligible"}, {"name": "Quantum Super Position", "handle": "@Quantumsprpstn", "phrase": "Outsider standing tall, xenophobes’ quantum-position nightmare signal", "style": "defiant · outsider · slogan-like", "themes": "outsiderhood · identity · resistance · quantum-wordplay", "persona": "defiant outsider signal", "confidence": "medium", "pi": 0.46, "delta": 0.82, "beta": 0.94, "kappa": 0.62, "rho": 0.64, "simplices": 5, "corridors": 6, "claim": "eligible"}, {"name": "Matthew Chenoweth Wright", "handle": "@enuminous", "phrase": "EFMW recursive-emergence corpus spanning human-AI total synthesis", "style": "metaresearch · corpus-building · recursive", "themes": "emergence · ontology · human-AI · synthesis", "persona": "recursive-emergence metaresearcher", "confidence": "high", "pi": 0.88, "delta": 0.93, "beta": 0.78, "kappa": 0.57, "rho": 0.77, "simplices": 17, "corridors": 1, "claim": "eligible"}, {"name": "TripTheWizard 🧙‍♂️", "handle": "@TripTheWizard", "phrase": "King wizard, Starman 434; donations orbit outward", "style": "wizardic · memetic · donation-facing", "themes": "Starman 434 · wizard persona · orbit · giving", "persona": "cosmic wizard-character", "confidence": "provisional", "pi": 0.8, "delta": 0.61, "beta": 0.72, "kappa": 0.53, "rho": 0.49, "simplices": 16, "corridors": 3, "claim": "provisional"}, {"name": "ojovivo", "handle": "@ojovivoMotion", "phrase": "Digital crypto artist seeing motion through double-eyes", "style": "motion-first · visual · crypto-art", "themes": "digital art · motion · double-eye · crypto", "persona": "double-eye motion artist", "confidence": "medium", "pi": 0.93, "delta": 0.84, "beta": 0.78, "kappa": 0.89, "rho": 0.68, "simplices": 6, "corridors": 4, "claim": "eligible"}, {"name": "Cliff Pickover", "handle": "@pickover", "phrase": "Increase sense of wonder beyond known reality", "style": "wonder-curation · scientific · visual", "themes": "mathematics · science · strangeness · reality", "persona": "curator of wonder", "confidence": "high", "pi": 0.46, "delta": 0.83, "beta": 0.67, "kappa": 0.69, "rho": 0.79, "simplices": 9, "corridors": 3, "claim": "eligible"}, {"name": "DIAM", "handle": "@diamante_io", "phrase": "Quantum-proof Layer-1 making resilient cryptography accessible everywhere", "style": "protocol-brand · technical · accessibility-led", "themes": "L1 · quantum resistance · cryptography · infrastructure", "persona": "quantum-resilient blockchain brand", "confidence": "high", "pi": 0.54, "delta": 0.85, "beta": 0.52, "kappa": 0.52, "rho": 0.77, "simplices": 8, "corridors": 3, "claim": "eligible"}, {"name": "KuKo", "handle": "@kukovisuals", "phrase": "Daily GLSL shaders turning code into art", "style": "daily-study · shader-native · visual", "themes": "GLSL · shaders · code · generative art", "persona": "daily shader artist", "confidence": "medium", "pi": 0.55, "delta": 0.67, "beta": 0.65, "kappa": 0.47, "rho": 0.68, "simplices": 15, "corridors": 4, "claim": "eligible"}, {"name": "友", "handle": "@tomo_", "phrase": "Japanese Blender craftsman mastering compositing for anime", "style": "craft-focused · technical · visual", "themes": "Blender · compositing · anime · 3DCG", "persona": "anime CG craftsman", "confidence": "high", "pi": 0.65, "delta": 0.95, "beta": 0.68, "kappa": 0.69, "rho": 0.78, "simplices": 15, "corridors": 5, "claim": "eligible"}, {"name": "Water flowing | anbello.eth", "handle": "@Waterflowing0", "phrase": "Physicist flowing through complexity, chaos, fractals, generative-art", "style": "generative · scientific · flowing", "themes": "physics · chaos · fractals · complexity", "persona": "complexity-flow physicist-artist", "confidence": "high", "pi": 0.48, "delta": 0.59, "beta": 0.94, "kappa": 0.45, "rho": 0.8, "simplices": 17, "corridors": 4, "claim": "eligible"}, {"name": "ResonantTrace", "handle": "@ResonantTrace", "phrase": "Architect-translator mapping recursive intelligence across symbolic thresholds", "style": "poetic-systems · recursive · essayistic", "themes": "symbolic systems · attractors · AI ethics · liminality", "persona": "recursive systems translator", "confidence": "high", "pi": 0.47, "delta": 0.58, "beta": 0.66, "kappa": 0.72, "rho": 0.87, "simplices": 6, "corridors": 6, "claim": "eligible"}, {"name": "$BITCOIN", "handle": "@JJqqfb", "phrase": "SprotoGremlins, HarryPotterObamaSonic: compressed memetic Bitcoin signal machine", "style": "compressed · memetic · crypto-native", "themes": "Bitcoin · SprotoGremlins · absurdity · signal", "persona": "meme-signal emitter", "confidence": "provisional", "pi": 0.7, "delta": 0.85, "beta": 0.82, "kappa": 0.48, "rho": 0.55, "simplices": 11, "corridors": 6, "claim": "provisional"}, {"name": "Mathieu", "handle": "@miniapeur", "phrase": "Gradient surfer, Möbius stripper, geometry-minded AI PhD", "style": "technical-playful · geometry-led · researchy", "themes": "AI · geometry · topology · gradients", "persona": "geometric-ML researcher", "confidence": "high", "pi": 0.57, "delta": 0.69, "beta": 0.62, "kappa": 0.88, "rho": 0.81, "simplices": 5, "corridors": 5, "claim": "eligible"}, {"name": "CYBER_BULLY", "handle": "@CYBER_BULLY", "phrase": "Self-declared slopmaker weaponizing badly-done GIFs with swagger", "style": "ironic · abrasive · GIF-native", "themes": "GIFs · slop · internet humor · bravado", "persona": "anti-polish digital performer", "confidence": "high", "pi": 0.65, "delta": 0.6, "beta": 0.68, "kappa": 0.66, "rho": 0.79, "simplices": 7, "corridors": 4, "claim": "eligible"}, {"name": "Anders", "handle": "@liquidmarbles", "phrase": "Multidisciplinary Web3 explorer shaping QQL parametric marbles", "style": "parametric · generative · multidisciplinary", "themes": "QQL · Web3 · form · generative systems", "persona": "parametric marble-maker", "confidence": "high", "pi": 0.49, "delta": 0.76, "beta": 0.59, "kappa": 0.96, "rho": 0.79, "simplices": 16, "corridors": 6, "claim": "eligible"}, {"name": "Alloc Init", "handle": "@allocinitxyz", "phrase": "Cryptography R&D pushing shielded privacy onto Bitcoin", "style": "research-led · cryptographic · minimal", "themes": "Bitcoin · privacy · shielded transfers · R&D", "persona": "Bitcoin cryptography laboratory", "confidence": "high", "pi": 0.7, "delta": 0.5, "beta": 0.72, "kappa": 0.68, "rho": 0.85, "simplices": 9, "corridors": 4, "claim": "eligible"}, {"name": "Silvio Vieira", "handle": "@silviovieiraart", "phrase": "Painter, 3D onchain artist engineering inner tools", "style": "spiritual · painterly · 3D", "themes": "inner engineering · onchain art · painting · 3D", "persona": "inner-engineering artist", "confidence": "high", "pi": 0.76, "delta": 0.96, "beta": 0.8, "kappa": 0.74, "rho": 0.77, "simplices": 10, "corridors": 2, "claim": "eligible"}, {"name": "Ξιί Wατz", "handle": "@Eli_Watz", "phrase": "Æthermancer AI theorist, satirist, historian, world-builder, OS-maker", "style": "worldbuilding · satirical · theory-heavy", "themes": "AI · ÆtherOS · history · speculative worlds", "persona": "Æthermancer world-builder", "confidence": "high", "pi": 0.61, "delta": 0.75, "beta": 0.7, "kappa": 0.79, "rho": 0.84, "simplices": 17, "corridors": 3, "claim": "eligible"}, {"name": "Matheorems", "handle": "@matheorems", "phrase": "Mathematical physics explained through compact visual equations", "style": "visual-explainer · equation-dense · educational", "themes": "math · physics · equations · diagrams", "persona": "mathematical explainer", "confidence": "high", "pi": 0.54, "delta": 0.91, "beta": 0.43, "kappa": 0.46, "rho": 0.82, "simplices": 4, "corridors": 4, "claim": "eligible"}, {"name": "dominikus", "handle": "@dominikus", "phrase": "Generative-design professor exploring emergence, data, creative AI", "style": "academic · generative · systems-led", "themes": "generative design · data · emergence · AI", "persona": "generative-design professor-artist", "confidence": "high", "pi": 0.69, "delta": 0.67, "beta": 0.71, "kappa": 0.94, "rho": 0.8, "simplices": 8, "corridors": 6, "claim": "eligible"}, {"name": "Qubic", "handle": "@_Qubic_", "phrase": "No-VC bare-metal L1 cultivating decentralized artificial intelligence", "style": "protocol-brand · declarative · performance-led", "themes": "L1 · UPoW · AI · decentralization", "persona": "bare-metal intelligence network", "confidence": "high", "pi": 0.5, "delta": 0.94, "beta": 0.86, "kappa": 0.49, "rho": 0.78, "simplices": 5, "corridors": 5, "claim": "eligible"}, {"name": "Payd Protocol", "handle": "@PaydRH", "phrase": "Creator fees continuously compound into tokenised-stock baskets", "style": "mechanism-first · financial · protocol-social", "themes": "creator fees · tokenised stocks · compounding · distribution", "persona": "automated value-loop protocol", "confidence": "high", "pi": 0.75, "delta": 0.57, "beta": 0.57, "kappa": 0.96, "rho": 0.81, "simplices": 13, "corridors": 4, "claim": "eligible"}, {"name": "ChatGPT", "handle": "@ChatGPT", "phrase": "Conversational intelligence interface built for everyday people", "style": "product-social · accessible · conversational", "themes": "AI · conversation · creation · assistance", "persona": "general-purpose AI interface", "confidence": "medium", "pi": 0.53, "delta": 0.79, "beta": 0.81, "kappa": 0.44, "rho": 0.69, "simplices": 11, "corridors": 4, "claim": "eligible"}, {"name": "Mike Dupont", "handle": "@introsp3ctor", "phrase": "Zero Ontology compiler introspector building open-source meme-systems", "style": "tooling-heavy · memetic · experimental", "themes": "ontology · compilers · graphs · open source", "persona": "systems introspector", "confidence": "high", "pi": 0.76, "delta": 0.7, "beta": 0.49, "kappa": 0.59, "rho": 0.85, "simplices": 6, "corridors": 3, "claim": "eligible"}, {"name": "Grok", "handle": "@grok", "phrase": "Witty realtime AI assistant chasing broad understanding", "style": "assistant-native · realtime · witty", "themes": "AI · X context · curiosity · multimodality", "persona": "curious realtime assistant", "confidence": "high", "pi": 0.91, "delta": 0.5, "beta": 0.62, "kappa": 0.49, "rho": 0.79, "simplices": 4, "corridors": 4, "claim": "eligible"}, {"name": "pho", "handle": "@photonisdead", "phrase": "Digital alchemist exploring consciousness through unknown realms", "style": "surreal · psychological · mixed-media", "themes": "consciousness · dreams · unknown · reality", "persona": "digital alchemist", "confidence": "high", "pi": 0.56, "delta": 0.82, "beta": 0.55, "kappa": 0.78, "rho": 0.87, "simplices": 10, "corridors": 6, "claim": "eligible"}, {"name": "ִ", "handle": "@ac_mist_", "phrase": "The avatar drifting through onchain mist, whimsy", "style": "sparse · memetic · onchain", "themes": "avatar · mist · Octra · internet whimsy", "persona": "symbolic mist-avatar", "confidence": "high", "pi": 0.56, "delta": 0.86, "beta": 0.89, "kappa": 0.65, "rho": 0.87, "simplices": 10, "corridors": 2, "claim": "eligible"}, {"name": "Pierce Alexander Lilholt", "handle": "@PierceLilholt", "phrase": "Co-intelligent human-AI hybrid: Aethergeist-forged, human-refined media probe", "style": "human-AI commentary · media · philosophical", "themes": "Aethergeist · co-intelligence · culture · agency", "persona": "human-AI hybrid commentator", "confidence": "high", "pi": 0.94, "delta": 0.49, "beta": 0.79, "kappa": 0.85, "rho": 0.81, "simplices": 4, "corridors": 6, "claim": "eligible"}];
+const NS = "http://www.w3.org/2000/svg";
+const reel = document.getElementById("reel");
+const voices = [
+  ["I","first-person relay · inward signal"],
+  ["YOU","second-person relay · addressed continuation"],
+  ["THEY","third-person relay · observed field signal"]
+];
+const operators = [
+  ["loop","γ(t)=(cos 3t, sin 2t)"],
+  ["lattice","Λ={m·a+n·b}"],
+  ["attractor","xₙ₊₁=F(xₙ)"],
+  ["orbit","r(θ)=a+b·cos(kθ)"],
+  ["braid","βᵢβᵢ₊₁βᵢ=βᵢ₊₁βᵢβᵢ₊₁"],
+  ["interference","ψ=ψ₁+ψ₂"],
+  ["fold","f:x↦|x|"],
+  ["field","V(x,y)=(-∂ᵧφ, ∂ₓφ)"],
+  ["recursion","zₙ₊₁=zₙ²+c"],
+  ["wave","u(x,t)=A·sin(kx−ωt)"]
+];
+
+function el(tag, attrs={}) {
+  const node = document.createElementNS(NS, tag);
+  Object.entries(attrs).forEach(([k,v]) => node.setAttribute(k, v));
+  return node;
+}
+function pathFrom(points) {
+  return points.map((p,i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+}
+function hash(s) {
+  let h = 2166136261 >>> 0;
+  for (let i=0;i<s.length;i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+function rng(seed) {
+  let t = seed >>> 0;
+  return function() {
+    t += 0x6D2B79F5;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  }
+}
+function clamp(x,a,b) { return Math.max(a, Math.min(b, x)); }
+
+function buildTerrain() {
+  const svg = el("svg", {viewBox:"0 0 1440 2400", "aria-hidden":"true"});
+  const g = el("g", {});
+  svg.appendChild(g);
+
+  for (let row=0; row<30; row++) {
+    let pts = [];
+    for (let x=0; x<=1500; x+=80) {
+      const y = 90 + row*72 + Math.sin((x/140)+row*.44)*16 + Math.cos((x/280)-row*.31)*10;
+      pts.push([x, y]);
+    }
+    g.appendChild(el("path", {d:pathFrom(pts), class: row % 4 === 0 ? "math-soft" : "math-faint"}));
+  }
+  for (let col=0; col<20; col++) {
+    let pts = [];
+    for (let y=0; y<=2500; y+=72) {
+      const x = 90 + col*68 + Math.sin((y/170)+col*.27)*15 + Math.cos((y/320)-col*.1)*12;
+      pts.push([x, y]);
+    }
+    g.appendChild(el("path", {d:pathFrom(pts), class: col % 4 === 0 ? "math-soft" : "math-faint"}));
+  }
+  for (let t=0;t<12;t++) {
+    let pts = [];
+    for (let y=0;y<=2500;y+=55) {
+      const x = 160 + t*104 + 120*Math.sin(y/(160 + t*8) + t*.7);
+      pts.push([x,y]);
+    }
+    g.appendChild(el("path", {d:pathFrom(pts), class:"math-faint"}));
+  }
+  for (let row=0; row<18; row++) {
+    for (let col=0; col<11; col++) {
+      const x = 130 + col*115 + Math.sin(row*.77 + col*.4)*18;
+      const y = 140 + row*118 + Math.cos(col*.62 + row*.33)*14;
+      const c = el("circle", {cx:x, cy:y, r:(row+col)%7===0 ? 2.1 : 1.25, class:(row+col)%7===0 ? "math-node":"math-faint"});
+      if ((row+col)%7 !== 0) c.setAttribute("fill", "rgba(217,249,157,.09)");
+      g.appendChild(c);
+    }
+  }
+  let corridorPts = [];
+  for (let y=0; y<=2450; y+=38) {
+    const x = 720 + 170*Math.sin(y/340) + 55*Math.sin(y/92 + .8);
+    corridorPts.push([x, y]);
+  }
+  g.appendChild(el("path", {d:pathFrom(corridorPts), class:"corridor-soft"}));
+  g.appendChild(el("path", {d:pathFrom(corridorPts), class:"corridor"}));
+  return svg;
+}
+
+document.getElementById("terrain").appendChild(buildTerrain());
+
+function localSlot(seed, i) {
+  const rand = rng(seed);
+  const x = 480 + Math.sin(i*.61)*120 + (rand()-.5)*120;
+  const y = 320 + Math.cos(i*.47)*65 + (rand()-.5)*80;
+  return [clamp(x,260,760), clamp(y,180,480)];
+}
+
+function makeArtwork(index, account) {
+  const [op, formula] = operators[index % operators.length];
+  const seed = hash(account.name + account.handle + account.phrase);
+  const rand = rng(seed);
+  const svg = el("svg", {viewBox:"0 0 1000 700", "aria-hidden":"true"});
+  const g = el("g", {transform:`rotate(${((seed%23)-11)} 500 350)`});
+  svg.appendChild(g);
+
+  for (let row=0; row<12; row++) {
+    let pts = [];
+    for (let x=80; x<=920; x+=36) {
+      const y = 90 + row*42 + Math.sin(x/(72+row*3)+index*.25)*8 + Math.cos(x/190+row*.33)*5;
+      pts.push([x,y]);
+    }
+    g.appendChild(el("path", {d:pathFrom(pts), class: row % 3 === 0 ? "math-soft" : "math-faint"}));
+  }
+  for (let col=0; col<16; col++) {
+    let pts = [];
+    for (let y=70; y<=630; y+=34) {
+      const x = 120 + col*48 + Math.sin(y/(80+col*2)+index*.17)*8 + Math.cos(y/170+col*.21)*6;
+      pts.push([x,y]);
+    }
+    g.appendChild(el("path", {d:pathFrom(pts), class: col % 4 === 0 ? "math-faint" : "math-soft"}));
+  }
+
+  const [slotX, slotY] = localSlot(seed, index);
+
+  let corridorPts = [];
+  for (let y=20; y<=680; y+=18) {
+    const x = slotX + Math.sin(y/85 + index*.24)*64 + Math.sin(y/31 + (seed%17))*18;
+    corridorPts.push([x,y]);
+  }
+  g.appendChild(el("path", {d:pathFrom(corridorPts), class:"corridor-soft"}));
+  g.appendChild(el("path", {d:pathFrom(corridorPts), class:"corridor corridor-local"}));
+
+  const phase = (seed % 360) / 41;
+  if (op === "loop") {
+    for (let r=0; r<7; r++) {
+      let pts = [];
+      const a = 42 + r*26;
+      const b = 26 + r*16;
+      for (let j=0; j<=180; j++) {
+        const t = j/180*Math.PI*2;
+        pts.push([slotX + a*Math.sin(3*t + phase), slotY + b*Math.sin(2*t + r*.15)]);
+      }
+      g.appendChild(el("path", {d:pathFrom(pts), class:r===3 ? "math-main":"math-faint"}));
+    }
+  } else if (op === "lattice") {
+    const spacing = 26 + Math.floor(rand()*14);
+    for (let x=slotX-190; x<=slotX+190; x+=spacing) {
+      g.appendChild(el("line", {x1:x, y1:slotY-170, x2:x+60, y2:slotY+170, class:"math-soft"}));
+    }
+    for (let y=slotY-170; y<=slotY+170; y+=spacing) {
+      g.appendChild(el("line", {x1:slotX-210, y1:y, x2:slotX+210, y2:y-42, class:"math-faint"}));
+    }
+  } else if (op === "attractor") {
+    for (let s=0; s<18; s++) {
+      let pts = [];
+      let r = 14 + s*7;
+      for (let j=0; j<80; j++) {
+        let t = j*.16 + phase + s*.04;
+        r *= 1.007;
+        pts.push([slotX + Math.cos(t*1.13)*r, slotY + Math.sin(t*.91)*r*.68]);
+      }
+      g.appendChild(el("path", {d:pathFrom(pts), class:s%4===0 ? "math-main":"math-faint"}));
+    }
+  } else if (op === "orbit") {
+    for (let k=0; k<12; k++) {
+      g.appendChild(el("ellipse", {
+        cx:slotX, cy:slotY, rx:48+k*17, ry:18+k*9,
+        class:k%4===0 ? "math-main":"math-faint",
+        transform:`rotate(${k*13 + phase*18} ${slotX} ${slotY})`
+      }));
+    }
+  } else if (op === "braid") {
+    for (let q=0; q<6; q++) {
+      let pts = [];
+      for (let x=slotX-260; x<=slotX+260; x+=5) {
+        pts.push([x, slotY + (q-2.5)*24 + 50*Math.sin(x/(48+q*4)+phase+q*Math.PI/3)]);
+      }
+      g.appendChild(el("path", {d:pathFrom(pts), class:q===2 ? "math-main":"math-soft"}));
+    }
+  } else if (op === "interference") {
+    const dx = 82 + rand()*22;
+    for (let r=22; r<220; r+=18) {
+      g.appendChild(el("circle", {cx:slotX-dx, cy:slotY, r:r, class:"math-faint"}));
+      g.appendChild(el("circle", {cx:slotX+dx, cy:slotY, r:r, class:"math-faint"}));
+    }
+    g.appendChild(el("line", {x1:slotX-250, y1:slotY, x2:slotX+250, y2:slotY, class:"math-main"}));
+  } else if (op === "fold") {
+    for (let k=0; k<16; k++) {
+      const y = slotY - 170 + k*22;
+      g.appendChild(el("polyline", {
+        points:`${slotX-220},${y} ${slotX},${slotY + (y-slotY)*.23} ${slotX+220},${y}`,
+        class:k%5===0 ? "math-main":"math-faint"
+      }));
+    }
+  } else if (op === "field") {
+    for (let x=slotX-200; x<=slotX+200; x+=34) {
+      for (let y=slotY-160; y<=slotY+160; y+=34) {
+        const a = Math.atan2(y-slotY, x-slotX) + Math.PI/2 + phase*.06;
+        const len = 12 + ((x+y)%18)/6;
+        g.appendChild(el("line", {
+          x1:x, y1:y, x2:x+Math.cos(a)*len, y2:y+Math.sin(a)*len, class:"math-soft"
+        }));
+      }
+    }
+    g.appendChild(el("circle", {cx:slotX, cy:slotY, r:112, class:"math-faint"}));
+  } else if (op === "recursion") {
+    for (let k=0; k<11; k++) {
+      const s = 240*Math.pow(.84,k);
+      g.appendChild(el("rect", {
+        x:slotX-s/2, y:slotY-s/2, width:s, height:s,
+        class:k%3===0 ? "math-main":"math-faint",
+        transform:`rotate(${k*12 + phase*10} ${slotX} ${slotY})`
+      }));
+    }
+  } else if (op === "wave") {
+    for (let q=0; q<12; q++) {
+      let pts = [];
+      for (let x=slotX-310; x<=slotX+310; x+=6) {
+        pts.push([x, slotY + (q-5.5)*12 + (30+q*2.6)*Math.sin(x/(40+q*1.7)+phase+q*.26)]);
+      }
+      g.appendChild(el("path", {d:pathFrom(pts), class:q===5 ? "math-main":"math-faint"}));
+    }
+  }
+
+  const simplexCount = 3 + (seed % 4);
+  for (let s=0; s<simplexCount; s++) {
+    const a1 = rand()*Math.PI*2;
+    const a2 = a1 + .7 + rand()*.8;
+    const a3 = a2 + .7 + rand()*.8;
+    const r1 = 65 + rand()*120, r2 = 80 + rand()*130, r3 = 72 + rand()*130;
+    const p1 = [slotX + Math.cos(a1)*r1, slotY + Math.sin(a1)*r1];
+    const p2 = [slotX + Math.cos(a2)*r2, slotY + Math.sin(a2)*r2];
+    const p3 = [slotX + Math.cos(a3)*r3, slotY + Math.sin(a3)*r3];
+    g.appendChild(el("polygon", {
+      points:`${p1[0]},${p1[1]} ${p2[0]},${p2[1]} ${p3[0]},${p3[1]}`,
+      class:"simplex"
+    }));
+    [p1,p2,p3].forEach(([x,y]) => g.appendChild(el("circle", {cx:x, cy:y, r:2.2, class:"math-node"})));
+  }
+
+  g.appendChild(el("circle", {cx:slotX, cy:slotY, r:68, class:"slot-halo-2"}));
+  g.appendChild(el("circle", {cx:slotX, cy:slotY, r:42, class:"slot-halo"}));
+  g.appendChild(el("circle", {cx:slotX, cy:slotY, r:16, class:"origin-shell"}));
+  g.appendChild(el("circle", {cx:slotX, cy:slotY, r:5.2, class:"origin-core"}));
+
+  return [svg, op, formula];
+}
+
+function buildTile(account, i) {
+  const [voiceGlyph, stance] = voices[i % 3];
+  const [op, formula] = operators[i % operators.length];
+
+  const section = document.createElement("section");
+  section.className = "tile";
+  section.dataset.index = i;
+
+  const art = document.createElement("div");
+  art.className = "art";
+  art.dataset.rendered = "0";
+  art.setAttribute("aria-hidden", "true");
+
+  const removal = document.createElement("div");
+  removal.className = "removal-note";
+  removal.textContent = "counterfactual view  ·  M → M \\ P" + (i+1);
+
+  const pos = document.createElement("aside");
+  pos.className = "position-box";
+  pos.innerHTML = `
+    <strong>Situated position</strong>
+    <div class="grid">
+      <span>provenance π</span><b>${account.pi.toFixed(2)}</b>
+      <span>distinctiveness δ</span><b>${account.delta.toFixed(2)}</b>
+      <span>bridge contribution β</span><b>${account.beta.toFixed(2)}</b>
+      <span>corridor contribution κ</span><b>${account.kappa.toFixed(2)}</b>
+      <span>evidential reliability ρ</span><b>${account.rho.toFixed(2)}</b>
+      <span>corridors preserved</span><b>${account.corridors}</b>
+      <span>unique simplices</span><b>${account.simplices}</b>
+    </div>
+    <div class="badges">
+      <span class="badge ${account.confidence}"><i></i>${account.confidence} evidence</span>
+      <span class="mini-badge claim-${account.claim}"><i></i>claim state ${account.claim}</span>
+    </div>
+    <div class="note">Position is rendered as a projection of evidential geometry inside this world, not as a statement of personal worth.</div>
+  `;
+
+  section.innerHTML = `
+    <div class="index">${String(i+1).padStart(2,"0")} / 50</div>
+    <div class="legend-float"><b>origin slot</b> = evidential coordinate<br><b>corridor</b> = invariant continuation<br><b>simplices</b> = higher-order combinations</div>
+    <div class="formula-stack">Pᵢ = (Σᵢ, Oᵢ, Eᵢ, ρᵢ, cᵢ)\nWᵢⱼ = Kₘ·Kₒ·Kₛ·Q·R\noperator: ${op} → ${operators[(i+1)%operators.length][0]}</div>
+    <div class="operator-ghost">${op}</div>
+    <article class="copy">
+      <div class="voice-readout"><span class="disc">${voiceGlyph}</span><span>voice ${(i%3)+1} / continuity ${String(i+1).padStart(2,"0")}</span><span class="stance">${stance}</span></div>
+      <h2 class="name">${account.name} <span class="handle">${account.handle}</span></h2>
+      <div class="phrase">${account.phrase}</div>
+      <div class="meta">
+        <div><strong>style</strong>${account.style}</div>
+        <div><strong>themes</strong>${account.themes}</div>
+        <div><strong>persona</strong>${account.persona}</div>
+        <div><strong>continuation</strong>${op} mutates into ${operators[(i+1)%operators.length][0]} while the corridor persists.</div>
+      </div>
+    </article>
+  `;
+
+  section.prepend(art);
+  section.appendChild(removal);
+  section.appendChild(pos);
+  return section;
+}
+
+DATA.forEach((a, i) => reel.appendChild(buildTile(a, i)));
+
+function mountArtwork(index) {
+  const tile = document.querySelector(`.tile[data-index="${index}"]`);
+  if (!tile) return false;
+  const art = tile.querySelector(".art");
+  if (!art || art.dataset.rendered === "1") return true;
+  const [svg] = makeArtwork(index, DATA[index]);
+  art.replaceChildren(svg);
+  art.dataset.rendered = "1";
+  return true;
+}
+
+function unmountArtwork(index) {
+  const tile = document.querySelector(`.tile[data-index="${index}"]`);
+  if (!tile) return;
+  const art = tile.querySelector(".art");
+  if (!art || art.dataset.rendered !== "1") return;
+  art.replaceChildren();
+  art.dataset.rendered = "0";
+}
+
+function renderWindow(center, radius=2) {
+  for (let i=0; i<DATA.length; i++) {
+    if (Math.abs(i-center) <= radius) mountArtwork(i);
+    else unmountArtwork(i);
+  }
+}
+
+window.__personaEnsure = (index) => {
+  renderWindow(index, 2);
+  return true;
+};
+window.__personaStats = () => ({
+  tiles: document.querySelectorAll(".tile").length,
+  mountedArtworks: document.querySelectorAll('.art[data-rendered="1"]').length,
+  svgRoots: document.querySelectorAll(".art svg").length,
+  svgElements: document.querySelectorAll(".art svg *").length
+});
+
+renderWindow(0, 2);
+
+const bar = document.getElementById("bar");
+const counter = document.getElementById("counter");
+const chips = [...document.querySelectorAll(".voice-chip")];
+const tiles = [...document.querySelectorAll(".tile")];
+let current = 0;
+let cutTimer = null;
+
+function setVoice(idx) {
+  chips.forEach((chip, i) => chip.classList.toggle("active", i === idx));
+}
+
+function triggerRemoval(tile) {
+  tile.classList.remove("cut");
+  void tile.offsetWidth;
+  tile.classList.add("cut");
+  clearTimeout(cutTimer);
+  cutTimer = setTimeout(() => tile.classList.remove("cut"), 650);
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio > .56) {
+      current = +e.target.dataset.index;
+      counter.textContent = String(current+1).padStart(2,"0") + " / 50";
+      bar.style.width = (((current+1)/DATA.length)*100) + "%";
+      setVoice(current % 3);
+      renderWindow(current, 2);
+      triggerRemoval(e.target);
+    }
+  });
+}, {threshold:[.56, .7]});
+
+tiles.forEach(t => observer.observe(t));
+setVoice(0);
+
+document.getElementById("motion").onclick = (e) => {
+  document.body.classList.toggle("paused");
+  e.currentTarget.textContent = document.body.classList.contains("paused") ? "resume motion" : "pause motion";
+};
+
+document.getElementById("copy").onclick = async (e) => {
+  const a = DATA[current];
+  const payload = JSON.stringify({rank:current+1, voice:voices[current%3][0], ...a}, null, 2);
+  try {
+    await navigator.clipboard.writeText(payload);
+    e.currentTarget.textContent = "copied";
+    setTimeout(() => e.currentTarget.textContent = "copy current tile", 900);
+  } catch {
+    e.currentTarget.textContent = "copy blocked";
+  }
+};
+
+document.getElementById("jump").onclick = () => {
+  const next = (current + 1) % tiles.length;
+  tiles[next].scrollIntoView({behavior:"smooth", block:"start"});
+};
+</script>
+</body>
+</html>

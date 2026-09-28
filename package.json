@@ -1,0 +1,19 @@
+{
+  "name": "@blochfield/personal-continuum",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w @blochfield/continuum-web",
+    "build": "npm run build -w @blochfield/continuum-web",
+    "preview": "npm run preview -w @blochfield/continuum-web",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:data": "node scripts/check-data.mjs",
+    "check": "npm run check:data && npm run typecheck && npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6"
+  }
+}

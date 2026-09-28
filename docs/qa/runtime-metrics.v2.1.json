@@ -1,0 +1,107 @@
+{
+  "generatedAt": "2026-09-28T15:54:16.893Z",
+  "url": "http://127.0.0.1:48731/index.html",
+  "chromium": "Edg/154.0.4258.37",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "settleMs": 517,
+  "puppeteerMetrics": {
+    "Timestamp": 492324.027655,
+    "Documents": 4,
+    "Frames": 4,
+    "JSEventListeners": 3,
+    "Nodes": 8776,
+    "LayoutCount": 15,
+    "RecalcStyleCount": 16,
+    "LayoutDuration": 0.274463,
+    "RecalcStyleDuration": 0.018396,
+    "ScriptDuration": 0.061504,
+    "TaskDuration": 0.635427,
+    "JSHeapUsedSize": 1807208,
+    "JSHeapTotalSize": 5242880
+  },
+  "checkpoints": [
+    {
+      "index": 0,
+      "virtualized": {
+        "tiles": 50,
+        "mountedArtworks": 3,
+        "svgRoots": 3,
+        "svgElements": 199
+      },
+      "domNodes": 3114,
+      "totalSvgElements": 462,
+      "heapHint": {
+        "usedJSHeapSize": 1667113,
+        "totalJSHeapSize": 4764949,
+        "jsHeapSizeLimit": 4230479872
+      }
+    },
+    {
+      "index": 12,
+      "virtualized": {
+        "tiles": 50,
+        "mountedArtworks": 5,
+        "svgRoots": 5,
+        "svgElements": 335
+      },
+      "domNodes": 3252,
+      "totalSvgElements": 598,
+      "heapHint": {
+        "usedJSHeapSize": 2361761,
+        "totalJSHeapSize": 4768381,
+        "jsHeapSizeLimit": 4230479872
+      }
+    },
+    {
+      "index": 24,
+      "virtualized": {
+        "tiles": 50,
+        "mountedArtworks": 5,
+        "svgRoots": 5,
+        "svgElements": 350
+      },
+      "domNodes": 3267,
+      "totalSvgElements": 613,
+      "heapHint": {
+        "usedJSHeapSize": 1653624,
+        "totalJSHeapSize": 4771220,
+        "jsHeapSizeLimit": 4230479872
+      }
+    },
+    {
+      "index": 37,
+      "virtualized": {
+        "tiles": 50,
+        "mountedArtworks": 5,
+        "svgRoots": 5,
+        "svgElements": 458
+      },
+      "domNodes": 3375,
+      "totalSvgElements": 721,
+      "heapHint": {
+        "usedJSHeapSize": 1702792,
+        "totalJSHeapSize": 5043112,
+        "jsHeapSizeLimit": 4230479872
+      }
+    },
+    {
+      "index": 49,
+      "virtualized": {
+        "tiles": 50,
+        "mountedArtworks": 3,
+        "svgRoots": 3,
+        "svgElements": 199
+      },
+      "domNodes": 3114,
+      "totalSvgElements": 462,
+      "heapHint": {
+        "usedJSHeapSize": 1877763,
+        "totalJSHeapSize": 5314499,
+        "jsHeapSizeLimit": 4230479872
+      }
+    }
+  ]
+}
