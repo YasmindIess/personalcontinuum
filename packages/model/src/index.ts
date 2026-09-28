@@ -1,3 +1,5 @@
+export * from "./heptad";
+
 export type VoiceStance = "I" | "YOU" | "THEY";
 export type EvidenceConfidence = "high" | "medium" | "provisional";
 export type OperatorFamily = "loop" | "lattice" | "attractor" | "orbit" | "braid" | "interference" | "fold" | "field" | "recursion" | "wave";
@@ -36,6 +38,7 @@ export interface PublicSignal {
   evidenceConfidence: EvidenceConfidence;
   voiceStance: VoiceStance;
   voiceStanceStatus: "legacy-seeded" | "curated" | "relation-derived";
+  /** @deprecated V3 rendering is generated from projection7 via SemanticHeptad. Retained as a compatibility witness. */
   render: OperatorIdentity;
   position: SituatedPosition;
   relationSeeds: string[];

@@ -1,4 +1,5 @@
-import type { OperatorFamily, PublicSignal } from "@blochfield/continuum-model";
+import { compileSemanticHeptad, type OperatorFamily, type PublicSignal } from "@blochfield/continuum-model";
+import { renderSemanticHeptad } from "./heptad";
 
 const NS="http://www.w3.org/2000/svg";
 const C={bg:"#05070a",ink:"#e6efe8",soft:"#91a59e",faint:"#5d6d67",accent:"#d9f99d",strong:"#eefad0"};
@@ -15,21 +16,27 @@ const stroke=(g:SVGGElement,d:string,color=C.ink,w=1,o=.7,dash="")=>g.append(el(
 const poly=(pts:Array<[number,number]>)=>pts.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ");
 
 export function renderSignalWorld(signal:PublicSignal,ctx:RenderContext={}):SVGSVGElement{
-  const svg=el("svg",{viewBox:"0 0 1000 700",role:"img","aria-label":signal.name+": "+signal.render.operatorId+" operator-signature world",
-    "data-operator-id":signal.render.operatorId,"data-primary":signal.render.primaryFamily,"data-secondary":signal.render.secondaryFamily,
-    "data-deformation":signal.render.deformation,"data-topology":signal.render.topologyMotif,"data-corridor":signal.render.corridorMode});
+  const heptad=compileSemanticHeptad(signal);
+  const svg=el("svg",{viewBox:"0 0 1000 700",role:"img","aria-label":signal.name+": "+heptad.fingerprint+" semantic-heptad world",
+    "data-heptad":heptad.fingerprint,"data-operator-id":signal.render.operatorId,"data-primary":signal.render.primaryFamily,
+    "data-secondary":signal.render.secondaryFamily,"data-render-source":"projection7"});
   const root=el("g");svg.append(root);
-  const r=rng(signal.render.seed),reduced=ctx.density==="reduced",density=reduced?.62:1;
-  const cx=500+(r()-.5)*54,cy=350+(r()-.5)*38,dx=(r()-.5)*72,dy=(r()-.5)*48,rot=(r()-.5)*34;
-  const field=el("g",{opacity:reduced?.27:.38,"data-layer":"shared-field"});sharedField(field,signal.rank,signal.render.seed,density);root.append(field);
-  chamber(root,cx,cy,signal.render.seed,signal.evidenceConfidence);
-  topology(root,signal.render.topologyMotif,cx,cy,signal.render.seed,density);
-  const kernel=el("g",{transform:deform(signal.render.deformation,cx,cy,signal.render.seed,1.04),"data-layer":"dominant-silhouette","data-family":signal.render.primaryFamily});
-  silhouette(kernel,signal.render.primaryFamily,cx+dx,cy+dy,signal.render.seed,rot);root.append(kernel);
-  secondary(root,signal.render.secondaryFamily,signal.render.deformation,cx,cy,signal.render.seed);
-  corridor(root,signal.render.corridorMode,cx,cy,signal.render.seed,signal.rank,ctx.corridorPhase??0);
-  micro(root,cx,cy,signal.render.seed,signal.render.primaryFamily);
-  origin(root,cx,cy,signal.render.seed,signal.evidenceConfidence);
+  const r=rng(heptad.seed),reduced=ctx.density==="reduced",density=reduced?.62:1;
+  const cx=500+(r()-.5)*44,cy=350+(r()-.5)*32,dx=(r()-.5)*54,dy=(r()-.5)*38,rot=(r()-.5)*28;
+
+  const field=el("g",{opacity:reduced?.22:.31,"data-layer":"shared-field"});
+  sharedField(field,signal.rank,heptad.seed,density);root.append(field);
+  chamber(root,cx,cy,heptad.seed,signal.evidenceConfidence);
+
+  const legacy=el("g",{opacity:.11,"data-layer":"legacy-operator-witness","data-operator-id":signal.render.operatorId});
+  topology(legacy,signal.render.topologyMotif,cx,cy,signal.render.seed,density);
+  const kernel=el("g",{transform:deform(signal.render.deformation,cx,cy,signal.render.seed,.92),"data-family":signal.render.primaryFamily});
+  silhouette(kernel,signal.render.primaryFamily,cx+dx,cy+dy,signal.render.seed,rot);legacy.append(kernel);
+  secondary(legacy,signal.render.secondaryFamily,signal.render.deformation,cx,cy,signal.render.seed);
+  root.append(legacy);
+
+  renderSemanticHeptad(root,heptad,cx,cy,reduced);
+  origin(root,cx,cy,heptad.seed,signal.evidenceConfidence);
   return svg;
 }
 

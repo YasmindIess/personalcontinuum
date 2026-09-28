@@ -1,8 +1,8 @@
-# Operator Identity Grammar v0.3
+# Operator Identity Grammar v0.4 — Semantic Heptad Migration
 
-The ten V2.1 operators are retained as a **basis**, not as the final count of artworks.
+The ten V2.1 operators are retained only as a **compatibility basis** during migration. V3's canonical generative source is the ordered seven-word public-signal projection compiled as a Semantic Heptad.
 
-Every public signal receives one stable operator identity:
+Legacy compatibility identity:
 
 `OI_i = (primary, secondary, deformation, topology, corridor, seed, rendererVersion)`
 
@@ -61,3 +61,28 @@ The operator identity is an identity of the **rendered situated world**, not an 
 3. With names hidden, sampled worlds are distinguishable in under one second by silhouette and corridor interaction.
 4. Mobile retains name, seven-word projection, one evidence cue, one relation cue and navigation without clipping.
 5. Reduced mobile density changes projection cost, not operator identity.
+
+
+## Canonical V3 source
+
+`projection7 → SemanticHeptad → seven ordered mutations → situated world`
+
+The seven-word projection is executable geometry, not caption metadata. Each token compiles to a semantic action and an eight-dimensional bounded vector. The compiler carries state from word 1 through word 7, so composition is non-commutative: exchanging two words may change the resultant world.
+
+The current legacy tuple `OI_i` remains renderable only as a low-opacity lineage witness. It MUST NOT dominate the V3 image.
+
+### Semantic atom
+
+Each atom contains: source token, normalized token, order, semantic action, bounded vector, token hash, contextual hash, and provenance `projection7`.
+
+### State continuity
+
+Every atom receives the state produced by its predecessor and produces a new state. Therefore the heptad preserves both lexical content and word order.
+
+### Fallback discipline
+
+Known semantic terms use explicit action rules. Unknown terms still receive deterministic action/vector assignments from their token and contextual hashes. Hash-derived state is a visual reconstruction device, never evidence about a person.
+
+### Acceptance
+
+A V3 world is non-conforming if changing `projection7` while keeping the legacy operator tuple fixed leaves the dominant artwork unchanged.
