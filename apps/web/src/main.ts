@@ -1,8 +1,10 @@
 import "./styles/app.css";
 import "./styles/heptad.css";
+import "./styles/audit.css";
 import { renderSignalWorld } from "@blochfield/continuum-renderer";
 import { compileSemanticHeptad } from "@blochfield/continuum-model";
 import { signals } from "./runtime/store";
+import { renderAuditSurface } from "./audit";
 
 const app = document.querySelector<HTMLElement>("#app")!;
 
@@ -31,6 +33,7 @@ let index = fromHash();
 let reducedDensity = matchMedia("(max-width: 700px)").matches;
 let blindMode = false;
 let derivationMode = false;
+let auditMode = false;
 
 function navigate(delta: number) {
   index = (index + delta + signals.length) % signals.length;
@@ -39,6 +42,15 @@ function navigate(delta: number) {
 }
 
 function mount() {
+  if (auditMode) {
+    app.replaceChildren(renderAuditSurface(
+      signals,
+      (selected) => { index = selected; auditMode = false; history.replaceState(null, "", `#${signals[index].id}`); mount(); },
+      () => { auditMode = false; mount(); },
+    ));
+    return;
+  }
+
   const s = signals[index];
   const stance = STANCE[s.voiceStance];
   const relationCount = s.relationSeeds.length;
@@ -135,6 +147,7 @@ function mount() {
       <nav class="pc-footer" aria-label="Continuum navigation">
         <button class="pc-blind-toggle" id="blind" aria-pressed="${blindMode}">${blindMode ? "reveal" : "blind test"}</button>
         <button class="pc-derive-toggle" id="derive" aria-pressed="${derivationMode}">${derivationMode ? "close derivation" : "derive"}</button>
+        <button class="pc-derive-toggle" id="audit" aria-pressed="${auditMode}">audit 50</button>
         <button class="pc-button" id="prev" aria-label="Previous situated world">←</button>
         <div class="pc-footer-state">${String(index + 1).padStart(2, "0")} · ${escapeHTML(s.id)}</div>
         <button class="pc-button" id="next" aria-label="Next situated world">→</button>
@@ -149,6 +162,7 @@ function mount() {
   document.querySelector<HTMLButtonElement>("#next")!.onclick = () => navigate(1);
   document.querySelector<HTMLButtonElement>("#blind")!.onclick = () => { blindMode = !blindMode; mount(); };
   document.querySelector<HTMLButtonElement>("#derive")!.onclick = () => { derivationMode = !derivationMode; mount(); };
+  document.querySelector<HTMLButtonElement>("#audit")!.onclick = () => { auditMode = true; mount(); };
 }
 
 addEventListener("keydown", (event) => {
@@ -156,6 +170,7 @@ addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") navigate(1);
   if (event.key.toLowerCase() === "b") { blindMode = !blindMode; mount(); }
   if (event.key.toLowerCase() === "d") { derivationMode = !derivationMode; mount(); }
+  if (event.key.toLowerCase() === "a") { auditMode = !auditMode; mount(); }
 });
 
 addEventListener("hashchange", () => {
