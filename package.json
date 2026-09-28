@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w @blochfield/continuum-web",
     "build": "npm run build -w @blochfield/continuum-web",
     "preview": "npm run preview -w @blochfield/continuum-web",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check:data": "node scripts/check-data.mjs",
-    "check": "npm run check:data && npm run typecheck && npm run build"
+    "check": "npm run check:data && npm run check:heptads && npm run typecheck && npm run build",
+    "check:heptads": "node --experimental-strip-types scripts/check-heptads.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
