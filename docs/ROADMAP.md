@@ -28,13 +28,13 @@ Populate real cited origins, create receipts, separate observation/interpretatio
 
 **Exit:** seed can be reconstructed from source + receipts without reading social copy.
 
-## R5 — Publication manifold
+## R5 — Publication manifold (implementation complete; human publication pending)
 
 Generate two 25-post draft manifests and deterministic media, while preserving manual review/publish. Record published post IDs afterward.
 
 **Exit:** thread and website share stable signal IDs and deep links.
 
-## R6 — Response ingress
+## R6 — Response ingress (kernel complete; external adapter pending)
 
 Introduce an adapter boundary for X API/user-context OAuth or manual URL attachment. A reply/correction becomes a new evidence event, not an in-place edit.
 

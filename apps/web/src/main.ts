@@ -1,10 +1,16 @@
 import "./styles/app.css";
 import "./styles/heptad.css";
 import "./styles/audit.css";
+import "./styles/relation.css";
+import "./styles/publication.css";
 import { renderSignalWorld } from "@blochfield/continuum-renderer";
 import { compileSemanticHeptad } from "@blochfield/continuum-model";
 import { signals } from "./runtime/store";
 import { renderAuditSurface } from "./audit";
+import { renderRelationSurface, renderMissingRelation } from "./relation";
+import { renderPublicationSurface } from "./publication";
+import { findRelationSeed } from "./runtime/relations";
+import { parseRoute, relationPath, signalPath } from "./runtime/routes";
 
 const app = document.querySelector<HTMLElement>("#app")!;
 
@@ -23,30 +29,51 @@ const escapeHTML = (value: string) =>
     "'": "&#039;",
   })[char]!);
 
-const fromHash = () => {
-  const id = location.hash.slice(1).toUpperCase();
-  const found = signals.findIndex((signal) => signal.id.toUpperCase() === id);
-  return found >= 0 ? found : 0;
-};
-
-let index = fromHash();
+let index = (() => { const route=parseRoute(signals); return route.kind==="signal"?route.index:0; })();
 let reducedDensity = matchMedia("(max-width: 700px)").matches;
 let blindMode = false;
 let derivationMode = false;
 let auditMode = false;
 
-function navigate(delta: number) {
-  index = (index + delta + signals.length) % signals.length;
-  history.replaceState(null, "", `#${signals[index].id}`);
-  mount();
+function openSignal(nextIndex:number,replace=false){
+  index=(nextIndex+signals.length)%signals.length;
+  const method=replace?"replaceState":"pushState";
+  history[method](null,"",signalPath(signals[index]));
+  void mount();
 }
 
-function mount() {
+function navigate(delta: number) {
+  index = (index + delta + signals.length) % signals.length;
+  history.replaceState(null, "", signalPath(signals[index]));
+  void mount();
+}
+
+async function mount() {
+  const route=parseRoute(signals);
+  if(route.kind==="relation"){
+    const seed=findRelationSeed(route.id);
+    document.title=seed?route.id+" — Personal Continuum":"Relation not found — Personal Continuum";
+    const back=()=>{history.pushState(null,"",signalPath(signals[index]));void mount();};
+    app.replaceChildren(seed?await renderRelationSurface(seed,location.origin,back):renderMissingRelation(route.id,back));
+    return;
+  }
+  if(route.kind==="publication"){
+    document.title="Publication Manifold — Personal Continuum";
+    app.replaceChildren(renderPublicationSurface(
+      signals,
+      location.origin,
+      (signalId)=>{const next=signals.findIndex(signal=>signal.id===signalId);if(next>=0)openSignal(next);},
+      ()=>{history.pushState(null,"",signalPath(signals[index]));void mount();},
+    ));
+    return;
+  }
+  index=route.index;
+
   if (auditMode) {
     app.replaceChildren(renderAuditSurface(
       signals,
-      (selected) => { index = selected; auditMode = false; history.replaceState(null, "", `#${signals[index].id}`); mount(); },
-      () => { auditMode = false; mount(); },
+      (selected) => { auditMode = false; openSignal(selected); },
+      () => { auditMode = false; void mount(); },
     ));
     return;
   }
@@ -148,6 +175,8 @@ function mount() {
         <button class="pc-blind-toggle" id="blind" aria-pressed="${blindMode}">${blindMode ? "reveal" : "blind test"}</button>
         <button class="pc-derive-toggle" id="derive" aria-pressed="${derivationMode}">${derivationMode ? "close derivation" : "derive"}</button>
         <button class="pc-derive-toggle" id="audit" aria-pressed="${auditMode}">audit 50</button>
+        <button class="pc-derive-toggle" id="publication">publish 50</button>
+        <button class="pc-derive-toggle" id="relation001">RS-0001</button>
         <button class="pc-button" id="prev" aria-label="Previous situated world">←</button>
         <div class="pc-footer-state">${String(index + 1).padStart(2, "0")} · ${escapeHTML(s.id)}</div>
         <button class="pc-button" id="next" aria-label="Next situated world">→</button>
@@ -162,29 +191,28 @@ function mount() {
   document.querySelector<HTMLButtonElement>("#next")!.onclick = () => navigate(1);
   document.querySelector<HTMLButtonElement>("#blind")!.onclick = () => { blindMode = !blindMode; mount(); };
   document.querySelector<HTMLButtonElement>("#derive")!.onclick = () => { derivationMode = !derivationMode; mount(); };
-  document.querySelector<HTMLButtonElement>("#audit")!.onclick = () => { auditMode = true; mount(); };
+  document.querySelector<HTMLButtonElement>("#audit")!.onclick = () => { auditMode = true; void mount(); };
+  document.querySelector<HTMLButtonElement>("#publication")!.onclick = () => { history.pushState(null,"","/publication"); void mount(); };
+  document.querySelector<HTMLButtonElement>("#relation001")!.onclick = () => { history.pushState(null,"",relationPath("RS-0001")); void mount(); };
 }
 
 addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") navigate(-1);
   if (event.key === "ArrowRight") navigate(1);
-  if (event.key.toLowerCase() === "b") { blindMode = !blindMode; mount(); }
-  if (event.key.toLowerCase() === "d") { derivationMode = !derivationMode; mount(); }
-  if (event.key.toLowerCase() === "a") { auditMode = !auditMode; mount(); }
+  if (event.key.toLowerCase() === "b") { blindMode = !blindMode; void mount(); }
+  if (event.key.toLowerCase() === "d") { derivationMode = !derivationMode; void mount(); }
+  if (event.key.toLowerCase() === "a") { auditMode = !auditMode; void mount(); }
+  if (event.key.toLowerCase() === "p") { history.pushState(null,"","/publication"); void mount(); }
+  if (event.key.toLowerCase() === "r") { history.pushState(null,"",relationPath("RS-0001")); void mount(); }
 });
 
-addEventListener("hashchange", () => {
-  const next = fromHash();
-  if (next !== index) {
-    index = next;
-    mount();
-  }
-});
+addEventListener("hashchange",()=>void mount());
+addEventListener("popstate",()=>void mount());
 
 matchMedia("(max-width: 700px)").addEventListener("change", (event) => {
   reducedDensity = event.matches;
-  mount();
+  void mount();
 });
 
-if (!location.hash) history.replaceState(null, "", `#${signals[index].id}`);
-mount();
+if(location.pathname==="/"&&!location.hash)history.replaceState(null,"",signalPath(signals[index]));
+void mount();

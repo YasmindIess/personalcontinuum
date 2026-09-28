@@ -1,3 +1,4 @@
+export * from "./manifold.ts";
 export * from "./relation-seed.ts";
 
 import type { PublicSignal } from "@blochfield/continuum-model";

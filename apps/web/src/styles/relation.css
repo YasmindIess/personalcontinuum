@@ -1,0 +1,32 @@
+.pc-relation-surface{min-height:100svh;background:radial-gradient(circle at 52% 26%,rgba(217,249,157,.035),transparent 30%),#05070a;color:var(--pc-ink)}
+.pc-rel-hud{position:sticky;top:0;z-index:20;min-height:70px;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:20px;padding:12px var(--pc-pad);border-bottom:1px solid var(--pc-line);background:rgba(5,7,10,.92);backdrop-filter:blur(16px)}
+.pc-rel-identity strong,.pc-rel-identity span,.pc-rel-state b,.pc-rel-state span{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.pc-rel-identity strong{font-size:13px;letter-spacing:.12em;color:var(--pc-accent-strong)}
+.pc-rel-identity span,.pc-rel-state span{margin-top:3px;font-size:10px;color:#718079}
+.pc-rel-state{text-align:right}.pc-rel-state b{font-size:10px;letter-spacing:.08em;color:#d8e4de}
+.pc-rel-exit{min-height:42px;padding:0 13px;border:1px solid var(--pc-line);border-radius:999px;background:#090d0e;color:#9faca6;cursor:pointer;font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em}
+.pc-rel-body{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:64px 0 72px}
+.pc-rel-kicker{display:block;color:var(--pc-accent);font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em}
+.pc-rel-title h1{margin:13px 0 10px;font-size:clamp(34px,6vw,74px);line-height:.94;letter-spacing:-.055em}
+.pc-rel-title p{max-width:72ch;margin:0;color:#8b9993;font-size:13px;line-height:1.55}
+.pc-rel-facets{display:flex;flex-wrap:wrap;gap:7px;margin:26px 0}
+.pc-rel-facets span{padding:7px 9px;border:1px solid #27332f;border-radius:999px;color:#66736e;font:650 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.07em}
+.pc-rel-facets span[data-active="true"]{border-color:rgba(217,249,157,.44);color:var(--pc-accent-strong);background:rgba(217,249,157,.035)}
+.pc-rel-origins,.pc-rel-section,.pc-rel-packet,.pc-rel-gate{border-top:1px solid var(--pc-line);padding-top:14px}
+.pc-rel-origins h2,.pc-rel-section h2{margin:0 0 12px;color:#7c8a84;font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.11em}
+.pc-rel-origin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:9px}
+.pc-rel-origin{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;padding:13px;border:1px solid #23302c;border-radius:12px;background:rgba(9,13,14,.55)}
+.pc-rel-origin-index{grid-row:1/4;color:#61706a;font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+.pc-rel-origin strong{font-size:13px}.pc-rel-origin em{font:500 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#718079;font-style:normal}
+.pc-rel-origin code{grid-column:2;overflow:hidden;text-overflow:ellipsis;color:#65736d;font-size:9px}
+.pc-rel-source{grid-column:2;color:var(--pc-accent);font:600 10px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace}
+.pc-rel-source-blocked{color:#716f6b}
+.pc-rel-facet-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:30px}
+.pc-rel-list{margin:0;padding-left:19px;color:#d7e1dc;font-size:12px;line-height:1.6}
+.pc-rel-empty{margin:0;color:#68766f;font-size:12px;line-height:1.55}
+.pc-rel-packet,.pc-rel-gate{margin-top:30px}.pc-rel-packet{display:grid;gap:7px}
+.pc-rel-packet strong,.pc-rel-gate strong{font:650 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.1em;color:var(--pc-accent-strong)}
+.pc-rel-packet code,.pc-rel-packet span{font:500 10px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;color:#7d8b85}
+.pc-rel-gate ul{padding-left:18px;color:#a69d94;font:500 11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+.pc-rel-boundary{margin-top:36px;padding-top:13px;border-top:1px solid var(--pc-line);color:#63716b;font:500 10px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+@media(max-width:700px){.pc-rel-hud{grid-template-columns:1fr auto;padding:10px 12px}.pc-rel-state{display:none}.pc-rel-body{width:calc(100% - 26px);padding:40px 0 54px}.pc-rel-title h1{font-size:clamp(34px,11vw,54px)}.pc-rel-facet-grid{grid-template-columns:1fr}.pc-rel-origin-grid{grid-template-columns:1fr}}
