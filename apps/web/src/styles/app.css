@@ -253,3 +253,22 @@ button{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){
   .pc-progress i{transition:none}
 }
+
+
+/* R2/R3 Pass 2 — operator-signature identity chamber */
+.pc-art{filter:drop-shadow(0 20px 42px rgba(0,0,0,.34));transition:inset .25s ease,opacity .25s ease}
+.pc-art svg [data-layer="dominant-silhouette"]{filter:drop-shadow(0 0 16px rgba(217,249,157,.09))}
+.pc-art svg [data-layer="corridor-interaction"]{filter:drop-shadow(0 0 8px rgba(217,249,157,.08))}
+.pc-copy{transition:opacity .2s ease,transform .2s ease}
+.pc-blind-toggle{min-height:44px;padding:0 13px;border:1px solid var(--pc-line);border-radius:999px;background:rgba(9,13,14,.72);color:#93a09b;cursor:pointer;font:650 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}
+.pc-blind-toggle:hover,.pc-blind-toggle:focus-visible{color:var(--pc-accent-strong);border-color:rgba(217,249,157,.56);outline:none}
+.pc-footer{grid-template-columns:auto 44px auto 44px}
+.pc-shell[data-blind="true"] .pc-copy{opacity:0;pointer-events:none;transform:translateX(-18px)}
+.pc-shell[data-blind="true"] .pc-art{inset:54px 4vw 24px 4vw;opacity:1;mask-image:radial-gradient(circle at center,#000 0%,#000 68%,transparent 98%)}
+.pc-shell[data-blind="true"] .pc-stage::before{background:radial-gradient(circle at 52% 48%,rgba(217,249,157,.018),transparent 38%)}
+@media(max-width:700px){
+  .pc-footer{grid-template-columns:auto 44px auto 44px}
+  .pc-blind-toggle{padding:0 10px;font-size:10px}
+  .pc-shell[data-blind="true"] .pc-art{inset:58px -18vw 72px -18vw;mask-image:radial-gradient(circle at center,#000 0%,#000 64%,transparent 98%)}
+}
+@media(prefers-reduced-motion:reduce){.pc-copy,.pc-art{transition:none}}

@@ -27,6 +27,7 @@ const fromHash = () => {
 
 let index = fromHash();
 let reducedDensity = matchMedia("(max-width: 700px)").matches;
+let blindMode = false;
 
 function navigate(delta: number) {
   index = (index + delta + signals.length) % signals.length;
@@ -42,7 +43,7 @@ function mount() {
 
   document.title = `${s.name} — Personal Continuum`;
   app.innerHTML = `
-    <div class="pc-shell" data-voice="${s.voiceStance}" data-confidence="${s.evidenceConfidence}">
+    <div class="pc-shell" data-voice="${s.voiceStance}" data-confidence="${s.evidenceConfidence}" data-blind="${blindMode ? "true" : "false"}">
       <header class="pc-hud">
         <div class="pc-brand">
           PERSONAL CONTINUUM / BLOCHFIELD
@@ -90,6 +91,7 @@ function mount() {
             <span>${escapeHTML(s.render.deformation)}</span>
             <span>${escapeHTML(s.render.topologyMotif)}</span>
             <span>${escapeHTML(s.render.corridorMode)}</span>
+            <span>kernel / ${escapeHTML(s.render.primaryFamily)}</span>
           </div>
 
           <div class="pc-statuses" aria-label="Relation epistemic states">
@@ -106,6 +108,7 @@ function mount() {
       </main>
 
       <nav class="pc-footer" aria-label="Continuum navigation">
+        <button class="pc-blind-toggle" id="blind" aria-pressed="${blindMode}">${blindMode ? "reveal" : "blind test"}</button>
         <button class="pc-button" id="prev" aria-label="Previous situated world">←</button>
         <div class="pc-footer-state">${String(index + 1).padStart(2, "0")} · ${escapeHTML(s.id)}</div>
         <button class="pc-button" id="next" aria-label="Next situated world">→</button>
@@ -118,11 +121,13 @@ function mount() {
 
   document.querySelector<HTMLButtonElement>("#prev")!.onclick = () => navigate(-1);
   document.querySelector<HTMLButtonElement>("#next")!.onclick = () => navigate(1);
+  document.querySelector<HTMLButtonElement>("#blind")!.onclick = () => { blindMode = !blindMode; mount(); };
 }
 
 addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") navigate(-1);
   if (event.key === "ArrowRight") navigate(1);
+  if (event.key.toLowerCase() === "b") { blindMode = !blindMode; mount(); }
 });
 
 addEventListener("hashchange", () => {

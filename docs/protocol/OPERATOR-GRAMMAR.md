@@ -1,4 +1,4 @@
-# Operator Identity Grammar v0.2
+# Operator Identity Grammar v0.3
 
 The ten V2.1 operators are retained as a **basis**, not as the final count of artworks.
 
@@ -16,6 +16,10 @@ Every public signal receives one stable operator identity:
 - **seed** — deterministic local variation; never evidence and never an economic metric.
 - **renderer version** — reconstructibility boundary for visual identity across software changes.
 
+## Identity chamber rule
+
+Pass 2 introduces two visual strata. The common field preserves continuity across the fifty worlds; the identity chamber owns the first visual read. The shared manifold MUST become quieter inside the chamber, while the kernel MUST remain recognizable before reading a person's name.
+
 ## Identity rule
 
 Two slots may share a primary operator while remaining different mathematical identities.
@@ -23,6 +27,16 @@ Two slots may share a primary operator while remaining different mathematical id
 The renderer MUST consume all identity coordinates. A primary-family-only renderer is non-conforming because it collapses the 50 identities back into a visible ten-family cycle.
 
 An operator identity is stable under viewport changes. Responsive rendering may reduce density or crop projection, but MUST NOT change the canonical identity tuple.
+
+## Silhouette rule
+
+Every primary family defines a dominant body rather than merely a fine-line style: loop → lobed closed body; lattice → crystalline scaffold; attractor → spiral collapse basin; orbit → eccentric orbital cage; braid → interwoven ribbon bundle; interference → nodal lens body; fold → pleated membrane; field → vector-flux bloom; recursion → nested frame well; wave → standing-wave ribs.
+
+Secondary pressure, topology, deformation, corridor interaction, asymmetry and seed-derived micro-signature MUST keep same-family worlds visually distinct.
+
+## Stable asymmetry and micro-signature
+
+Seeded variation MUST create persistent structured bias rather than random-looking noise. Each world also carries a deterministic close-range micro-signature derived from its seed. The seed remains visual state, never evidence or an economic metric.
 
 ## Corridor rule
 
@@ -44,6 +58,6 @@ The operator identity is an identity of the **rendered situated world**, not an 
 
 1. All 50 operator signatures remain unique.
 2. The renderer consumes primary, secondary, deformation, topology, corridor and seed.
-3. Contact sheets show strong compositional individuation while retaining one Blochfield field grammar.
+3. With names hidden, sampled worlds are distinguishable in under one second by silhouette and corridor interaction.
 4. Mobile retains name, seven-word projection, one evidence cue, one relation cue and navigation without clipping.
 5. Reduced mobile density changes projection cost, not operator identity.
