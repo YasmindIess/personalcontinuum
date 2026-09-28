@@ -1,3 +1,5 @@
+export * from "./relation-seed";
+
 import type { PublicSignal } from "@blochfield/continuum-model";
 export interface ThreadPostDraft {
   part: 1 | 2;

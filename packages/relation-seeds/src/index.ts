@@ -1,3 +1,5 @@
+export * from "./admissibility";
+
 export type EvidenceFacet = "OBSERVED" | "INTERPRETED" | "OPEN" | "INDEPENDENTLY_VERIFIED";
 export type IndependentVerification = "deferred" | "pending" | "verified" | "rejected";
 

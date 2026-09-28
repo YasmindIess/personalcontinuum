@@ -1,1 +1,11 @@
-{"name":"@blochfield/publication","version":"0.1.0","type":"module","exports":"./src/index.ts","dependencies":{"@blochfield/continuum-model":"*"}}
+{
+  "name": "@blochfield/publication",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@blochfield/continuum-model": "*",
+    "@blochfield/relation-seeds": "*",
+    "@blochfield/provenance": "*"
+  }
+}

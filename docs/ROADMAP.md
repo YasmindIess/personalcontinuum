@@ -10,19 +10,19 @@ Extract canonical public-signal data, typed model, deterministic renderer, Relat
 
 **Exit:** no production concept depends on parsing the legacy HTML.
 
-## R2 — Render grammar v3
+## R2 — Render grammar v3 (implementation complete; blind exit audit installed)
 
 Replace ten visibly repeating operator families with a 50-instance compositional grammar: primary operator + secondary operator + deformation + topology motif + corridor behavior + semantic mutation vector.
 
 **Exit:** contact sheets show unmistakable local identity while still reading as one field.
 
-## R3 — Responsive disclosure
+## R3 — Responsive disclosure (implementation complete; mobile/one-screen audit installed)
 
 Virtualize whole shells, establish mobile-first typography, progressive evidence disclosure, touch targets ≥44px, and crop-safe media exports for X.
 
 **Exit:** mobile retains name, seven-word projection, one provenance cue, one relation cue, and navigation without clipping.
 
-## R4 — Relation Seed 001
+## R4 — Relation Seed 001 (active)
 
 Populate real cited origins, create receipts, separate observation/interpretation/open questions, generate a public deep link, and freeze the first publication packet.
 
