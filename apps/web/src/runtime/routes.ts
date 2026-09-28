@@ -3,11 +3,13 @@ import type { PublicSignal } from "@blochfield/continuum-model";
 export type ContinuumRoute =
   | { kind:"signal"; index:number }
   | { kind:"relation"; id:string }
-  | { kind:"publication" };
+  | { kind:"publication" }
+  | { kind:"topology" };
 
 export function parseRoute(signals:PublicSignal[], locationLike:Pick<Location,"pathname"|"hash">=location):ContinuumRoute{
   const path=decodeURIComponent(locationLike.pathname).replace(/\/+$/,"")||"/";
   if(path==="/publication")return {kind:"publication"};
+  if(path==="/topology")return {kind:"topology"};
 
   const relation=path.match(/^\/r\/(RS-[A-Z0-9-]+)$/i);
   if(relation)return {kind:"relation",id:relation[1].toUpperCase()};

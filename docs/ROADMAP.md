@@ -40,7 +40,7 @@ Introduce an adapter boundary for X API/user-context OAuth or manual URL attachm
 
 **Exit:** a participant response can reconstitute the local world with preserved lineage.
 
-## R7 — Evidential topology
+## R7 — Evidential topology (kernel + evidence-gated surface implemented; real edges pending admissible relations)
 
 Define relation features and compute provenance/distinctiveness/bridge/corridor/reliability from explicit source data. Add counterfactual removal `M -> M \\ P_i` against real graph structure.
 

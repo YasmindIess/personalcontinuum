@@ -3,13 +3,15 @@ import "./styles/heptad.css";
 import "./styles/audit.css";
 import "./styles/relation.css";
 import "./styles/publication.css";
+import "./styles/topology.css";
 import { renderSignalWorld } from "@blochfield/continuum-renderer";
 import { compileSemanticHeptad } from "@blochfield/continuum-model";
 import { signals } from "./runtime/store";
 import { renderAuditSurface } from "./audit";
 import { renderRelationSurface, renderMissingRelation } from "./relation";
 import { renderPublicationSurface } from "./publication";
-import { findRelationSeed } from "./runtime/relations";
+import { renderTopologySurface } from "./topology";
+import { findRelationSeed, relationSeeds } from "./runtime/relations";
 import { parseRoute, relationPath, signalPath } from "./runtime/routes";
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -62,6 +64,16 @@ async function mount() {
     app.replaceChildren(renderPublicationSurface(
       signals,
       location.origin,
+      (signalId)=>{const next=signals.findIndex(signal=>signal.id===signalId);if(next>=0)openSignal(next);},
+      ()=>{history.pushState(null,"",signalPath(signals[index]));void mount();},
+    ));
+    return;
+  }
+  if(route.kind==="topology"){
+    document.title="Evidential Topology — Personal Continuum";
+    app.replaceChildren(renderTopologySurface(
+      signals,
+      relationSeeds,
       (signalId)=>{const next=signals.findIndex(signal=>signal.id===signalId);if(next>=0)openSignal(next);},
       ()=>{history.pushState(null,"",signalPath(signals[index]));void mount();},
     ));
@@ -177,6 +189,7 @@ async function mount() {
         <button class="pc-derive-toggle" id="audit" aria-pressed="${auditMode}">audit 50</button>
         <button class="pc-derive-toggle" id="publication">publish 50</button>
         <button class="pc-derive-toggle" id="relation001">RS-0001</button>
+        <button class="pc-derive-toggle" id="topology">topology</button>
         <button class="pc-button" id="prev" aria-label="Previous situated world">←</button>
         <div class="pc-footer-state">${String(index + 1).padStart(2, "0")} · ${escapeHTML(s.id)}</div>
         <button class="pc-button" id="next" aria-label="Next situated world">→</button>
@@ -194,6 +207,7 @@ async function mount() {
   document.querySelector<HTMLButtonElement>("#audit")!.onclick = () => { auditMode = true; void mount(); };
   document.querySelector<HTMLButtonElement>("#publication")!.onclick = () => { history.pushState(null,"","/publication"); void mount(); };
   document.querySelector<HTMLButtonElement>("#relation001")!.onclick = () => { history.pushState(null,"",relationPath("RS-0001")); void mount(); };
+  document.querySelector<HTMLButtonElement>("#topology")!.onclick = () => { history.pushState(null,"","/topology"); void mount(); };
 }
 
 addEventListener("keydown", (event) => {
@@ -204,6 +218,7 @@ addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "a") { auditMode = !auditMode; void mount(); }
   if (event.key.toLowerCase() === "p") { history.pushState(null,"","/publication"); void mount(); }
   if (event.key.toLowerCase() === "r") { history.pushState(null,"",relationPath("RS-0001")); void mount(); }
+  if (event.key.toLowerCase() === "t") { history.pushState(null,"","/topology"); void mount(); }
 });
 
 addEventListener("hashchange",()=>void mount());
