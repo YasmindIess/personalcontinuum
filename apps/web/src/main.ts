@@ -1,5 +1,7 @@
 import "./styles/app.css";
+import "./styles/heptad.css";
 import { renderSignalWorld } from "@blochfield/continuum-renderer";
+import { compileSemanticHeptad } from "@blochfield/continuum-model";
 import { signals } from "./runtime/store";
 
 const app = document.querySelector<HTMLElement>("#app")!;
@@ -28,6 +30,7 @@ const fromHash = () => {
 let index = fromHash();
 let reducedDensity = matchMedia("(max-width: 700px)").matches;
 let blindMode = false;
+let derivationMode = false;
 
 function navigate(delta: number) {
   index = (index + delta + signals.length) % signals.length;
@@ -40,6 +43,13 @@ function mount() {
   const stance = STANCE[s.voiceStance];
   const relationCount = s.relationSeeds.length;
   const confidence = s.evidenceConfidence.toUpperCase();
+  const heptad = compileSemanticHeptad(s);
+  const atomStrip = heptad.atoms.map((atom) =>
+    `<span class="pc-atom-chip" data-action="${escapeHTML(atom.action)}"><b>${String(atom.order).padStart(2, "0")}</b><em>${escapeHTML(atom.token)}</em><i>${escapeHTML(atom.action)}</i></span>`,
+  ).join("");
+  const derivationRows = heptad.steps.map((step) =>
+    `<div class="pc-derive-row" data-action="${escapeHTML(step.atom.action)}"><b>${String(step.atom.order).padStart(2, "0")}</b><strong>${escapeHTML(step.atom.token)}</strong><span>${escapeHTML(step.atom.action)}</span><code>κ ${step.after.curvature.toFixed(2)} · ρ ${step.after.density.toFixed(2)} · χ ${step.after.connectivity.toFixed(2)} · ω ${step.after.rhythm.toFixed(2)}</code></div>`,
+  ).join("");
 
   document.title = `${s.name} — Personal Continuum`;
   app.innerHTML = `
@@ -52,7 +62,7 @@ function mount() {
         <div class="pc-progress" aria-hidden="true"><i style="width:${((index + 1) / signals.length) * 100}%"></i></div>
         <div class="pc-state">
           ${String(index + 1).padStart(2, "0")} / ${signals.length}
-          <span>${escapeHTML(s.render.operatorId)}</span>
+          <span>${escapeHTML(heptad.fingerprint)} · projection7 source</span>
         </div>
       </header>
 
@@ -70,6 +80,14 @@ function mount() {
           <h1 class="pc-name">${escapeHTML(s.name)} <span class="pc-handle">${escapeHTML(s.handle)}</span></h1>
           <div class="pc-projection">${escapeHTML(s.projection7)}</div>
 
+          <section class="pc-heptad-source" aria-label="Seven-word executable semantic source">
+            <div class="pc-heptad-head">
+              <strong>${escapeHTML(heptad.fingerprint)}</strong>
+              <span>projection7 → ordered semantic composition</span>
+            </div>
+            <div class="pc-atom-strip">${atomStrip}</div>
+          </section>
+
           <div class="pc-cues" aria-label="Situated evidence cues">
             <div>
               <strong>public evidence</strong>
@@ -85,13 +103,12 @@ function mount() {
             </div>
           </div>
 
-          <div class="pc-operator">
-            <strong>${escapeHTML(s.render.operatorId)}</strong>
+          <div class="pc-operator pc-legacy-operator">
+            <strong>legacy witness / ${escapeHTML(s.render.operatorId)}</strong>
             <span>${escapeHTML(s.render.primaryFamily)} × ${escapeHTML(s.render.secondaryFamily)}</span>
             <span>${escapeHTML(s.render.deformation)}</span>
             <span>${escapeHTML(s.render.topologyMotif)}</span>
             <span>${escapeHTML(s.render.corridorMode)}</span>
-            <span>kernel / ${escapeHTML(s.render.primaryFamily)}</span>
           </div>
 
           <div class="pc-statuses" aria-label="Relation epistemic states">
@@ -105,10 +122,19 @@ function mount() {
             Rendered public signal, not a definition of the person. Citation does not imply endorsement.
           </p>
         </article>
+        <aside class="pc-derivation" data-open="${derivationMode ? "true" : "false"}" aria-hidden="${derivationMode ? "false" : "true"}">
+          <div class="pc-derive-head">
+            <div><strong>SEMANTIC HEPTAD</strong><span>${escapeHTML(heptad.fingerprint)}</span></div>
+            <p>Each word mutates the state inherited from the previous word. Order is causal.</p>
+          </div>
+          <div class="pc-derive-list">${derivationRows}</div>
+          <div class="pc-derive-result"><strong>RESULTANT</strong><span>x ${heptad.resultant.x.toFixed(2)} · y ${heptad.resultant.y.toFixed(2)} · angle ${heptad.resultant.angle.toFixed(2)} · radius ${heptad.resultant.radius.toFixed(2)}</span></div>
+        </aside>
       </main>
 
       <nav class="pc-footer" aria-label="Continuum navigation">
         <button class="pc-blind-toggle" id="blind" aria-pressed="${blindMode}">${blindMode ? "reveal" : "blind test"}</button>
+        <button class="pc-derive-toggle" id="derive" aria-pressed="${derivationMode}">${derivationMode ? "close derivation" : "derive"}</button>
         <button class="pc-button" id="prev" aria-label="Previous situated world">←</button>
         <div class="pc-footer-state">${String(index + 1).padStart(2, "0")} · ${escapeHTML(s.id)}</div>
         <button class="pc-button" id="next" aria-label="Next situated world">→</button>
@@ -122,12 +148,14 @@ function mount() {
   document.querySelector<HTMLButtonElement>("#prev")!.onclick = () => navigate(-1);
   document.querySelector<HTMLButtonElement>("#next")!.onclick = () => navigate(1);
   document.querySelector<HTMLButtonElement>("#blind")!.onclick = () => { blindMode = !blindMode; mount(); };
+  document.querySelector<HTMLButtonElement>("#derive")!.onclick = () => { derivationMode = !derivationMode; mount(); };
 }
 
 addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft") navigate(-1);
   if (event.key === "ArrowRight") navigate(1);
   if (event.key.toLowerCase() === "b") { blindMode = !blindMode; mount(); }
+  if (event.key.toLowerCase() === "d") { derivationMode = !derivationMode; mount(); }
 });
 
 addEventListener("hashchange", () => {
