@@ -1,5 +1,5 @@
-export * from "./heptad-metrics";
-export * from "./heptad";
+export * from "./heptad-metrics.ts";
+export * from "./heptad.ts";
 
 export type VoiceStance = "I" | "YOU" | "THEY";
 export type EvidenceConfidence = "high" | "medium" | "provisional";

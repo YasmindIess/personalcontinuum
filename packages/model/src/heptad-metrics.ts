@@ -1,4 +1,4 @@
-import type { SemanticHeptad, SemanticState, SemanticVector } from "./heptad";
+import type { SemanticHeptad, SemanticState, SemanticVector } from "./heptad.ts";
 
 const VECTOR_KEYS: Array<keyof SemanticVector> = [
   "curvature","symmetry","density","scale","connectivity","rhythm","radiality","polarity",
